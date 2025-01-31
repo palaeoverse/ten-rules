@@ -18,6 +18,11 @@ data <- data %>%
   mutate(most_recent = order(timestamp, decreasing = TRUE)) %>%
   filter(most_recent == 1)
 
+# Exclude publications?
+# exc_pub <- unique(data$publication[which(data$include == "No")])
+# data <- data %>%
+#   filter(!publication %in% exc_pub)
+
 # Data wrangling --------------------------------------------------------
 ## Analyses formatting --------------------------------------------------
 # Raw archived
