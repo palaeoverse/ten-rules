@@ -19,14 +19,37 @@ data <- data %>%
   filter(most_recent == 1)
 
 # Data wrangling --------------------------------------------------------
+## Analyses formatting --------------------------------------------------
+# Raw archived
+raw_archived <- data %>%
+  select(publication, evaluator, raw_archived) %>%
+  pivot_wider(names_from = evaluator, values_from = raw_archived)
+write.csv(raw_archived, "data/raw_archived.csv", row.names = FALSE)
+# Data cleaned
+data_cleaned <- data %>%
+  select(publication, evaluator, data_cleaned) %>%
+  pivot_wider(names_from = evaluator, values_from = data_cleaned)
+write.csv(data_cleaned, "data/data_cleaned.csv", row.names = FALSE)
+# Workflow doucmented
+workflow_documented <- data %>%
+  select(publication, evaluator, workflow_documented) %>%
+  pivot_wider(names_from = evaluator, values_from = workflow_documented)
+write.csv(workflow_documented, "data/workflow_documented.csv", row.names = FALSE)
+# Processed archived
+processed_archived <- data %>%
+  select(publication, evaluator, processed_archived) %>%
+  pivot_wider(names_from = evaluator, values_from = processed_archived)
+write.csv(processed_archived, "data/processed_archived.csv", row.names = FALSE)
+
+# Plot format
 data <- data %>%
   select(-timestamp, -method, -most_recent) %>% 
   arrange(evaluator, publication) %>%
   pivot_longer(cols = raw_archived:processed_archived) %>% 
   group_by(publication, name, value) %>%
   summarise(count = length(value))
-  
 
+## Plot formatting ------------------------------------------------------
 data$publication <- sub(pattern = "PBDB #", 
                         replacement = "", 
                         x = data$publication)  
@@ -36,5 +59,4 @@ data$publication <- sub(pattern = " - .*",
 data$publication <- as.numeric(data$publication)
 
 # Save data
-write.csv(data, "./data/summary_data.csv", row.names = FALSE)
-
+write.csv(data, "./data/plot_data.csv", row.names = FALSE)
