@@ -12,22 +12,53 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, include = TRUE, eval = TRUE)
 ```
 
-## R Markdown
+# Introduction
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Here we present a full example workflow that complies with the 10 Rules we propose in the manuscript.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Load packages
 
-```{r cars}
-summary(cars)
+```{r load_packages}
+#install.packages(c("dplyr", "palaeoverse"))
+library(dplyr)
+library(palaeoverse)
 ```
 
-## Including Plots
+## Rule 1: Know your data and question
 
-You can also embed plots, for example:
+In this example, we will explore, clean and interrogate the fossil record of crocodiles. As ectotherms, crocodiles are highly reliant on the environment in which they live in order to maintain a functional internal body temperature. Because of this, their spatial distribution is constrained to warm climates, so their fossil record is commonly used as an indicator of palaeoclimate. Here we will investigate the palaeodiversity of crocodiles, with the specific goal of reconstructing their biogeographic patterns throughout the Paleogene. The data will be sourced from the [Paleobiology Database](https://paleobiodb.org).
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Rule 2: Keep raw data raw
+
+
+The raw download includes a block of metadata at the top, including valuable information such as the URL for the API call, and the date and time of download. We can retain this information in the raw file, but read into R the table beneath it, using the `skip` parameter, which tells R to ignore the given number of rows at the top of the file.
+
+```{r read_raw}
+fossils <- read.csv("data/Paleogene_crocs.csv", header = TRUE, skip = 19)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Rule 3: Document your workflow
+
+## Rule 4: Explore your data
+
+Here is data exploration
+
+```{r test}
+plot(test)
+```
+
+## Rule 5: Handle incomplete data records
+
+## Rule 6: Identify outliers
+
+## Rule 7: Identify inconsistencies
+
+## Rule 8: Identify duplicates
+
+## Rule 9: Report your data cleaning efforts
+
+"Here is what we would write in the paper"
+
+## Rule 10: Deposit your data workflow and recording
+
+# Summary
