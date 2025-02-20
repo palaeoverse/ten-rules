@@ -74,6 +74,14 @@ And now we are ready to commence our data exploration and cleaning.
 
 [All]
 
+Documenting your workflow is essential for ensuring that others can understand and replicate all steps. Using programming languages such as R or Python makes this easy, as the code used can be provided alongside the data. Our vignette gives an example of how `markdown` can be a particularly useful tool for integrating code with prose, ensuring that everything is fully explained, and providing plots integrated within the text when exported.
+
+Our tips for good documentation in R include:
+- Following general guidelines for good coding, such as ample use of spacing to help human readability
+- Having a clear, overarching code structure (such as subheadings, and an order which corresponds to the flow of the research methods/results)
+- Using logical yet short variable names
+- Including comments throughout which explain both *what* and *why*, 
+
 ## Rule 4: Explore your data
 
 [Will]
