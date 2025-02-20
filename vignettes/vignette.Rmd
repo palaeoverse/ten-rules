@@ -19,7 +19,7 @@ Here we present a full example workflow that complies with the 10 Rules we propo
 
 ## Load packages
 
-```{r load_packages, message=FALSE}
+```{r load_packages, message = FALSE}
 #install.packages(c("dplyr", "palaeoverse"))
 library(dplyr)
 library(palaeoverse)
@@ -32,12 +32,43 @@ In this example, we will explore, clean and interrogate the fossil record of cro
 ## Rule 2: Keep raw data raw
 
 [Bethany]
+# Would it be better to download directly from the API and show the first step as saving the file?
 
-The raw download includes a block of metadata at the top, including valuable information such as the URL for the API call, and the date and time of download. We can retain this information in the raw file, but read into R the table beneath it, using the `skip` parameter, which tells R to ignore the given number of rows at the top of the file.
+We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
+
+For our dataset, we pulled all occurrences associated with the taxon "Crocodylia", dated to the "Paleogene", in the form of a ".csv" file. All other settings were left at default. We will see later in the vignette what this means in terms of what is contained within the dataset.
+
+For reproducibility, we want to make sure that we have a copy of the full dataset as initially downloaded - this is the "raw" data. Automatically, when we use the online form, there is an output option checked which is labelled 'Include metadata at the beginning of the output'. This ensures that the raw data file includes a metadata 'header', which contains useful information linked to the dataset.
+
+We can load and view the metadata to see what it includes.
+
+```{r read_metadata}
+# Load data file
+metadata <- read.csv("../data/Paleogene_crocs.csv")
+# Trim to metadata
+metadata <- metadata[1:23,]
+# Print
+metadata
+```
+
+The metadata are strangely formatted here, but we can see that they include information about the data license (CC0), the API call used (under the label 'Data URL'), the date and time at which the data were accessed, and the total number of records contained within the dataset.
+
+These metadata elements are all important information to retain alongside our data, allowing others to better understand what the dataset contains, and when and how it was downloaded. The Paleobiology Database is fully dynamic, not only in that new data is continually being added, but also any record can be changed retrospectively by an Editor. It cannot be assumed that the 'present' state of any data point was the same in the past. So, for example, if someone wanted to see how the data associated with this API call had changed in the time elapsed since our download, they could do this, and directly in R if desired:
+
+```{r API_call, eval = FALSE}
+# Pull API URL
+metadata[5,2]
+# Use API call (this is not enacted)
+new_data <- read.csv(metadata[5,2], header = TRUE)
+```
+
+While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the `skip` parameter in `read.csv`, which tells R to ignore the given number of rows at the top of the file.
 
 ```{r read_raw}
 fossils <- read.csv("../data/Paleogene_crocs.csv", header = TRUE, skip = 19)
 ```
+
+And now we are ready to commence our data exploration and cleaning.
 
 ## Rule 3: Document your workflow
 
