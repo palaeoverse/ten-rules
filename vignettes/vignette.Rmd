@@ -190,7 +190,29 @@ ggplot(fossils_y) +
 
 [?]
 
-By default, when we read data tables into R, any cells which are empty are filled with `NA` (meaning 'not applicable'). Because of this, typically when we want to find missing values, we need to search for values which are `NA`. 
+By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as `read.csv()`, empty cells are given an `NA` value ('not applicable') only when the column is considered to contain numerical data. When we use `Tidyverse` functions, such as `readr::read_csv()`, *all* empty cells are given `NA` values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are `NA`.
+
+The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of `NA` values for for the `collection_no` is 0.
+
+```{r count_NA_collections}
+# Count the number of collection number values for which `is.na()` is TRUE
+sum(is.na(fossils$collection_no))
+```
+
+This is because it is impossible to add an occurrence to the PBDB without putting it in a collection, which must in turn have an identification number.
+
+However, what about `genus`?
+
+```{r count_NA_genera}
+# Count the number of genus IDs for which `is.na()` is TRUE
+sum(is.na(fossils$genus))
+```
+
+The value here is 382. This represents the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.
+
+What can, or should, we do about this? It depends heavily on the intersection between the different variables in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are). Alternatively, it might be approriate to filter these values out (for example, if we wanted to calculate the relative abundance of different crocodylian genera, an `NA` in this data column would render the occurrence irrelevant for this specific analysis).
+
+A further option applicable in some cases would be to fill in our `NA`s. We may be able to interpolate values from the rest of our data, or use additional data sources.
 
 ## Rule 6: Identify outliers
 
