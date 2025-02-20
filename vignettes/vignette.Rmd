@@ -20,9 +20,10 @@ Here we present a full example workflow that complies with the 10 Rules we propo
 ## Load packages
 
 ```{r load_packages, message = FALSE}
-#install.packages(c("dplyr", "palaeoverse"))
+#install.packages(c("dplyr", "palaeoverse", "readr"))
 library(dplyr)
 library(palaeoverse)
+library(readr)
 ```
 
 ## Rule 1: Know your data and question
@@ -64,8 +65,8 @@ new_data <- read.csv(metadata[5,2], header = TRUE)
 
 While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the `skip` parameter in `read.csv`, which tells R to ignore the given number of rows at the top of the file.
 
-```{r read_raw}
-fossils <- read.csv("../data/Paleogene_crocs.csv", header = TRUE, skip = 19)
+```{r read_raw, message = FALSE}
+fossils <- read_csv("../data/Paleogene_crocs.csv", skip = 19)
 ```
 
 And now we are ready to commence our data exploration and cleaning.
@@ -86,9 +87,9 @@ Our tips for good documentation in R include:
 
 [Will]
 
-Here is data exploration
+The first thing we want to do with our data is *explore* it - that is, generate summary statistics and plots to help us understand the data and its various characteristics.
 
-```{r load_packages2, message=FALSE}
+```{r load_packages2, message = FALSE}
 library(ggplot2)
 library(deeptime)
 library(rnaturalearth)
@@ -188,6 +189,8 @@ ggplot(fossils_y) +
 ## Rule 5: Handle incomplete data records
 
 [?]
+
+By default, when we read data tables into R, any cells which are empty are filled with `NA` (meaning 'not applicable'). Because of this, typically when we want to find missing values, we need to search for values which are `NA`. 
 
 ## Rule 6: Identify outliers
 
