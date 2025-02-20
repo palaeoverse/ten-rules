@@ -31,6 +31,7 @@ In this example, we will explore, clean and interrogate the fossil record of cro
 
 ## Rule 2: Keep raw data raw
 
+[Bethany]
 
 The raw download includes a block of metadata at the top, including valuable information such as the URL for the API call, and the date and time of download. We can retain this information in the raw file, but read into R the table beneath it, using the `skip` parameter, which tells R to ignore the given number of rows at the top of the file.
 
@@ -40,7 +41,12 @@ fossils <- read.csv("../data/Paleogene_crocs.csv", header = TRUE, skip = 19)
 
 ## Rule 3: Document your workflow
 
+[All]
+
 ## Rule 4: Explore your data
+
+[Will]
+
 Here is data exploration
 
 ```{r load_packages2, message=FALSE}
@@ -142,16 +148,28 @@ ggplot(fossils_y) +
 
 ## Rule 5: Handle incomplete data records
 
+[?]
+
 ## Rule 6: Identify outliers
+
+[Bethany]
 
 ## Rule 7: Identify inconsistencies
 
+[Erin]
+
 ## Rule 8: Identify duplicates
 
+[Ale]
+
 ## Rule 9: Report your data cleaning efforts
+
+[All]
 
 "Here is what we would write in the paper"
 
 ## Rule 10: Deposit your data workflow and recording
+
+[Will]
 
 # Summary
