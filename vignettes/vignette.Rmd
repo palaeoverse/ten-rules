@@ -20,7 +20,7 @@ Here we present a full example workflow that complies with the 10 Rules we propo
 ## Load packages
 
 ```{r load_packages, message = FALSE}
-#install.packages(c("dplyr", "palaeoverse", "readr", "ggplot2", "deeptime", "rnaturalearth", "rnaturalearthdata"))
+#install.packages(c("dplyr", "palaeoverse", "readr", "ggplot2", "deeptime", "rnaturalearth", "rnaturalearthdata", "rgplates"))
 library(dplyr)
 library(palaeoverse)
 library(readr)
@@ -28,6 +28,7 @@ library(ggplot2)
 library(deeptime)
 library(rnaturalearth)
 library(rnaturalearthdata)
+library(rgplates)
 ```
 
 ## Rule 1: Know your data and question
@@ -163,9 +164,29 @@ sum(is.na(fossils$genus))
 
 The value here is 382. This corresponds to the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.
 
-What can, or should, we do about this? It depends heavily on the intersection between the different variables in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are). Alternatively, it might be approriate to filter these values out (for example, if we wanted to calculate the relative abundance of different crocodylian genera, an `NA` in this data column would render the occurrence irrelevant for this specific analysis).
+What can, or should, we do about this? It depends heavily on the intersection between the different variables in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are).
 
-A further option applicable in some cases would be to fill in our `NA`s. We may be able to interpolate values from the rest of our data, or use additional data sources.
+Alternatively, it might be approriate to filter these values out. For our crocodile example, we are interested in biogeography, so the latitude and longitude, and palaeolatitude and palaeolongitude, are pretty important. Do we have missing values there?
+
+```{r missing_geo}
+# Count the number of occurrences for which `is.na()` is TRUE in latitude, longitude, palaeolatitude, and palaeolongitude
+sum(is.na(fossils$lat))
+sum(is.na(fossils$lng))
+sum(is.na(fossils$paleolat))
+sum(is.na(fossils$paleolng))
+```
+
+While all occurrences have modern day coordinates, 18 are missing palaeocoordinates. We will now remove these from the dataset.
+
+```{r remove_geo_NAs}
+# Remove occurrences which are missing palaeocoordinates
+fossils <- filter(fossils, !is.na(fossils$paleolng))
+# Check whether this has worked
+sum(is.na(fossils$paleolat))
+sum(is.na(fossils$paleolng))
+```
+
+A further option applicable in some cases would be to fill in our `NA`s. We may be able to interpolate values from the rest of our data, or use additional data sources. For our palaeogeography example above, we could generate our own coordinates, for example using `palaeoverse::palaeorotate()`.
 
 Let's revisit our country example from Rule 5. Does our list of country codes contain NAs?
 
@@ -180,10 +201,12 @@ Our test tells us that two of the values are `NA`: when we asked R to sort the v
 
 [Bethany]
 
-Next we want to focus in on the specific parameters which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe.
+Next we want to focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?
 
 ```{r map}
+# Load in a world map
 world <- ne_countries(scale = "medium", returnclass = "sf")
+# Plot the geographic coordinates of each locality over the world map
 ggplot(fossils) +
   geom_sf(data = world) +
   geom_point(aes(x = lng, y = lat)) +
@@ -192,47 +215,64 @@ ggplot(fossils) +
   coord_sf()
 ```
 
-We have a large density of crocodile occurrences in Europe and the western interior of the United States along with a smattering of occurrences across the other continents. The crocodile occurrences in Antarctica seem particularly suspicious. Let's investigate further. We'll plot the latitude of the occurrences through time.
+We have a large density of crocodile occurrences in Europe and the western interior of the United States, along with a smattering of occurrences across the other continents. This distribution seems to fit our previous knowledge, that the occurrences are spread across 46 countries. However, the crocodile occurrences in Antarctica seem particularly suspicious: crocodiles need a warm climate, and modern-day Antarctica certaintly doesn't fit this description. Let's investigate further. We'll do this by plotting the latitude of the occurrences through time.
 
 ```{r lat_time}
+# Add a column to the data frame with the midpoint of the fossil ages
 fossils <- fossils %>%
   mutate(mid_age = (min_ma + max_ma) / 2)
-
+# Plot the age of each occurrence against its latitude
 ggplot(fossils, aes(x = mid_age, y = lat)) +
   geom_point() +
   labs(x = "Age (Ma)",
        y = "Latitude") +
   scale_x_reverse() +
+  geom_hline(yintercept = 0) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-When we look at latitude through time, these occurrences look even more suspicious. But, wait, we should actually be looking at **paleo**latitude instead. Let's plot that against time.
+When we look at latitude through time, these occurrences look even more suspicious.
+# Can we make the occurrences for Antarctica a different colour compared to the rest?
+
+But, wait, we should actually be looking at **paleo**latitude instead. Let's plot that against time.
 
 ```{r paleolat_time}
-fossils <- fossils %>%
-  mutate(mid_age = (min_ma + max_ma) / 2)
-
+# Plot the age of each occurrence against its paleolatitude
 ggplot(fossils, aes(x = mid_age, y = paleolat)) +
   geom_point() +
   labs(x = "Age (Ma)",
        y = "Paleolatitude") +
   scale_x_reverse() +
+  geom_hline(yintercept = 0) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-Hmm...when we look at paleolatitude the occurrences are even **more** south. Time to really check out these occurrences...
+Hmm... when we look at paleolatitude the occurrences are even **further** south. Time to really check out these occurrences. Which collections are they within?
 
-Well, upon further investigation in the Paleobiology Database, the collections that these occurrences come from ([31173](https://paleobiodb.org/classic/basicCollectionSearch?collection_no=31173), [120887](https://paleobiodb.org/classic/basicCollectionSearch?collection_no=120887), and [43030](https://paleobiodb.org/classic/basicCollectionSearch?collection_no=43030)).
- all appear to be fairly legitimate. However, all three occurrences still appear to be outliers, especially in the late Eocene [when temperatures were dropping](https://doi.org/10.1038/s41586-018-0272-2). Since all three occurrences are listed as Crocodylia indet., it may make sense to remove them from further analyses.
+```{r antarctic_colls}
+# Find Antarctic collection numbers
+Antarctic <- filter(fossils, cc...36 == "AA")
+unique(Antarctic$collection_no)
+```
+
+Well, upon further visual inspection using the PBDB website, all appear to be fairly legitimate. However, all three occurrences still appear to be outliers, especially as in the late Eocene [temperatures were dropping](https://doi.org/10.1038/s41586-018-0272-2). What about the taxonomic certainty of these occurrences?
+
+```{r antarctic_IDs}
+# List taxonomic names associated with Antarctic occurrences
+Antarctic$identified_name
+```
+
+Since all three occurrences are listed as "Crocodylia indet.", it may make sense to remove them from further analyses anyway.
 
 Let's investigate if there are any other anomalies or outliers in our data. We'll bin the occurrences by stage to look for stage-level outliers.
 
 ```{r lat_time_binned}
+# Put occurrences into stage bins
 bins <- time_bins(scale = "international ages")
 fossils <- bin_time(occdf = fossils, bins = bins,
                     min_ma = "min_ma", max_ma = "max_ma", method = "majority") %>%
-  left_join(bins, by = c("bin_assignment" = "bin"))
-
+                    left_join(bins, by = c("bin_assignment" = "bin"))
+# Plot occurrences
 ggplot(fossils, aes(x = mid_ma, y = paleolat, fill = interval_name)) +
   geom_boxplot(scale = "width", show.legend = FALSE) +
   labs(x = "Age (Ma)",
@@ -242,14 +282,14 @@ ggplot(fossils, aes(x = mid_ma, y = paleolat, fill = interval_name)) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-Hmm, the Ypresian is looking pretty suspicious. Let's plot the Ypresian occurrences on a paleogeographic map to investigate further.
+Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in a graph. Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a paleogeographic map to investigate further.
 
 ```{r map_ypresian}
-library(rgplates)
+# Load map of the Ypresian, and identify Ypresian fossils
 fossils_y <- fossils %>%
   filter(interval_name == "Ypresian")
 world_y <- reconstruct("coastlines", age = 51.9)
-
+# Plot localities on the Ypresian map
 ggplot(fossils_y) +
   geom_sf(data = world_y) +
   geom_point(aes(x = paleolng, y = paleolat)) +
@@ -258,13 +298,13 @@ ggplot(fossils_y) +
   coord_sf()
 ```
 
-Aha! There is a concentrated cluster of occurrences in the western interior of North America. Without this strong geographic bias, all of the occurrences in the Ypresian appear to be normal, especially with [elevated temperatures during this time](https://doi.org/10.1038/s41586-018-0272-2).
+Aha! There is a concentrated cluster of occurrences in the western interior of North America. This high number of occurrences is increasing the weight of data at this palaeolatitude, and narrowing the boundaries at which other points are considered outliers. Without this strong geographic bias, all of the occurrences in the Ypresian appear to be normal, especially with [elevated temperatures during this time](https://doi.org/10.1038/s41586-018-0272-2).
 
 ```{r lat_ypresian}
-library(rgplates)
+# Remove US fossils from the Ypresian dataset
 fossils_y <- fossils_y %>%
-  filter(paleolat < 45)
-
+  filter(cc...36 != "US")
+# Plot histogram of Ypresian fossil palaeolatitudes
 ggplot(fossils_y) +
   geom_histogram(aes(x = paleolat)) +
   labs(x = "Paleolatitude")
