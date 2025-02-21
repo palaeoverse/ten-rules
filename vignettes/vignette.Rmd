@@ -192,7 +192,7 @@ ggplot(fossils_y) +
 
 By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as `read.csv()`, empty cells are given an `NA` value ('not applicable') only when the column is considered to contain numerical data. When we use `Tidyverse` functions, such as `readr::read_csv()`, *all* empty cells are given `NA` values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are `NA`.
 
-The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of `NA` values for for the `collection_no` is 0.
+The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of `NA` values for the `collection_no` is 0.
 
 ```{r count_NA_collections}
 # Count the number of collection number values for which `is.na()` is TRUE
