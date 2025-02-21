@@ -20,10 +20,14 @@ Here we present a full example workflow that complies with the 10 Rules we propo
 ## Load packages
 
 ```{r load_packages, message = FALSE}
-#install.packages(c("dplyr", "palaeoverse", "readr"))
+#install.packages(c("dplyr", "palaeoverse", "readr", "ggplot2", "deeptime", "rnaturalearth", "rnaturalearthdata"))
 library(dplyr)
 library(palaeoverse)
 library(readr)
+library(ggplot2)
+library(deeptime)
+library(rnaturalearth)
+library(rnaturalearthdata)
 ```
 
 ## Rule 1: Know your data and question
@@ -89,14 +93,94 @@ Our tips for good documentation in R include:
 
 The first thing we want to do with our data is *explore* it - that is, generate summary statistics and plots to help us understand the data and its various characteristics.
 
-```{r load_packages2, message = FALSE}
-library(ggplot2)
-library(deeptime)
-library(rnaturalearth)
-library(rnaturalearthdata)
+For example, we can look at the distribution of identification levels for our fossils.
+
+```{r ID_distribution}
+# Count the frequency of taxonomic ranks, and add a column which calculates the proportion
+count(fossils, accepted_rank) %>% mutate(fraction = (n/nrow(fossils) * 100))
 ```
 
-First we'll plot where the crocodile fossils have been found across the globe.
+We can see that of our 886 occurrences, 250 (28%) are identified to species level. A further 254 (29%) are identified to genus level. The remaining fossils are more coarsely identified, including 365 (41%) which are identified to the mysterious level of "unranked clade".
+
+Next, let's look at the distribution of fossils across localities. In the PBDB, fossils are placed within collections, each of which can roughly be considered a separate locality (they can also represent different sampling horizons at the same locality). First, we can count the number of unique `collection_no` values to find out how many unique collections are in the dataset.
+
+```{r unique_colls}
+# What is the length of a vector of unique collection numbers?
+length(unique(fossils$collection_no))
+```
+
+Our dataset contains 720 unique localities. We can also create a plot showing us the distribution of occurrences across these localities.
+
+```{r abundance_distribution}
+# Create a plot showing the number of fossils in each collection
+ggplot(fossils, aes(x = as.factor(collection_no))) +
+  geom_histogram(stat = "count") +
+  labs(x = "Collection number",
+       y = "Abundance")
+```
+
+We can see that the collection containing the most occurrences has 7, while the vast majority only contain a single occurrence.
+
+What about the countries in which these fossils were found? We can investigate this using the "cc", or "country code" column.
+
+```{r countries}
+# List unique country codes, and count them
+unique(fossils$cc...36)
+length(unique(fossils$cc...36))
+```
+
+Here we can see that Paleogene crocodiles have been found in 46 different countries. Let's sort those values alphabetically to help us find specific countries.
+
+```{r countries_2}
+# List and sort unique country codes, and count them
+sort(unique(fossils$cc...36))
+length(sort(unique(fossils$cc...36)))
+```
+
+Something weird has happened here: we can see that once the countries have been sorted, one of them has disappeared. Why? We will come back to this during our next rule.
+
+## Rule 5: Handle incomplete data records
+
+[?]
+
+By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as `read.csv()`, empty cells are given an `NA` value ('not applicable') only when the column is considered to contain numerical data. When we use `Tidyverse` functions, such as `readr::read_csv()`, *all* empty cells are given `NA` values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are `NA`.
+
+The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of `NA` values for the `collection_no` is 0.
+
+```{r count_NA_collections}
+# Count the number of collection number values for which `is.na()` is TRUE
+sum(is.na(fossils$collection_no))
+```
+
+This is because it is impossible to add an occurrence to the PBDB without putting it in a collection, which must in turn have an identification number.
+
+However, what about `genus`?
+
+```{r count_NA_genera}
+# Count the number of genus IDs for which `is.na()` is TRUE
+sum(is.na(fossils$genus))
+```
+
+The value here is 382. This corresponds to the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.
+
+What can, or should, we do about this? It depends heavily on the intersection between the different variables in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are). Alternatively, it might be approriate to filter these values out (for example, if we wanted to calculate the relative abundance of different crocodylian genera, an `NA` in this data column would render the occurrence irrelevant for this specific analysis).
+
+A further option applicable in some cases would be to fill in our `NA`s. We may be able to interpolate values from the rest of our data, or use additional data sources.
+
+Let's revisit our country example from Rule 5. Does our list of country codes contain NAs?
+
+```{r countries_3}
+# Count the number of country codes for which `is.na()` is TRUE
+sum(is.na(fossils$cc...36))
+```
+
+Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation should any apparent errors arise in the dataset.
+
+## Rule 6: Identify outliers
+
+[Bethany]
+
+Next we want to focus in on the specific parameters which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe.
 
 ```{r map}
 world <- ne_countries(scale = "medium", returnclass = "sf")
@@ -186,37 +270,7 @@ ggplot(fossils_y) +
   labs(x = "Paleolatitude")
 ```
 
-## Rule 5: Handle incomplete data records
-
-[?]
-
-By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as `read.csv()`, empty cells are given an `NA` value ('not applicable') only when the column is considered to contain numerical data. When we use `Tidyverse` functions, such as `readr::read_csv()`, *all* empty cells are given `NA` values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are `NA`.
-
-The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of `NA` values for the `collection_no` is 0.
-
-```{r count_NA_collections}
-# Count the number of collection number values for which `is.na()` is TRUE
-sum(is.na(fossils$collection_no))
-```
-
-This is because it is impossible to add an occurrence to the PBDB without putting it in a collection, which must in turn have an identification number.
-
-However, what about `genus`?
-
-```{r count_NA_genera}
-# Count the number of genus IDs for which `is.na()` is TRUE
-sum(is.na(fossils$genus))
-```
-
-The value here is 382. This represents the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.
-
-What can, or should, we do about this? It depends heavily on the intersection between the different variables in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are). Alternatively, it might be approriate to filter these values out (for example, if we wanted to calculate the relative abundance of different crocodylian genera, an `NA` in this data column would render the occurrence irrelevant for this specific analysis).
-
-A further option applicable in some cases would be to fill in our `NA`s. We may be able to interpolate values from the rest of our data, or use additional data sources.
-
-## Rule 6: Identify outliers
-
-[Bethany]
+So to sum up, it seems that our outliers are not concerning, so we will leave them in our dataset and continue with our analytical pipeline.
 
 ## Rule 7: Identify inconsistencies
 
