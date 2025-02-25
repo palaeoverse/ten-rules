@@ -29,6 +29,8 @@ library(deeptime)
 library(rnaturalearth)
 library(rnaturalearthdata)
 library(rgplates)
+library(fossilbrush)
+library(CoordinateCleaner)
 ```
 
 ## Rule 1: Know your data and question
@@ -314,7 +316,100 @@ So to sum up, it seems that our outliers are not concerning, so we will leave th
 
 ## Rule 7: Identify inconsistencies
 
-[Erin]
+We're now going to look for inconsistencies in our dataset. Let's start by revisiting its structure, focusing on whether the class types of the variables make sense.
+```{r}
+str(fossils)
+```
+
+Looks reasonable. Now let's dive in further to look for inconsistencies in spelling, which could cause taxonomic or geological units to be grouped separately when they are really the same thing. We'll start by checking for potential taxonomic misspellings.
+
+We can use the table() function to look at the frequencies of various families and genera in the dataset. Here, inconsistencies like misspellings or antiquated taxonomic names might be recognized.
+```{r}
+#Tabulating the frequency of values in the "family" and "genus" columns
+table(fossils$family)
+table(fossils$genus)
+
+#We can do the same for the specific identifications. There's some variation to check here, depending on the desired taxonomic resolution of our analysis.
+table(fossils$identified_name)
+table(fossils$accepted_name)
+```
+
+Alternatively, we can use the tax_check() function in the `palaeoverse` package, which systematically searches for and flags potential spelling variation using a defined dissimilarity threshold.
+```{r}
+#Let's see if there are any close spellings in the "genus" column
+tax_spell_genus <- tax_check(taxdf=fossils,name="genus",dis=0.1)
+tax_spell_genus
+
+#We'll do the same for "accepted name" column
+tax_spell_name <- tax_check(taxdf=fossils,name="accepted_name",dis=0.1)
+tax_spell_name #Here, some similar names are flagged but appear to be separate but similarly spelled taxonomic groups.
+```
+
+We can also check the formatting and spelling using the `fossilbrush` package. As above, no major inconsistencies or potential spelling errors were flagged.
+```{r}
+#Creating a list of taxonomic ranks to check
+fossil_ranks <- c("phylum","class","order","family","genus")
+
+#Making the dataframe to check
+fossils_df <- as.data.frame(fossils)
+
+#Running the checks
+tax_spell_fb <- check_taxonomy(fossils_df, ranks = fossil_ranks)
+tax_spell_fb   #looking closer, the rows with "NO_FAMILY_SPECIFIED" are flagged given the extra characters
+```
+
+Let's also check the formation names while we're at it. Here, we see some potential spelling variations that will need to be corrected if we wish to use the formations in our analysis.
+```{r}
+#Tabulating the frequency of each formation
+table(fossils$formation)
+
+#Checking for spelling variation...note some potential misspellings here!
+formation_spell <- tax_check(taxdf=fossils,name="formation",dis=0.1)
+formation_spell
+```
+
+We can also look for inconsistencies in the interval names and dates (e.g., if an interval is spelled two different ways or has multiple associated dates).
+```{r}
+#Again, we can use the table() function to tabulate the frequency of each interval
+table(fossils$early_interval)
+table(fossils$late_interval)
+
+#What are the ages associated with each interval? Any issues with the date formats?
+fossils %>% 
+  group_by(early_interval) %>% #grouping by interval
+  distinct(max_ma.x) %>%  #pulling out the distinct values
+  arrange(early_interval) #putting the list in order so it's easier to scan for inconsistencies
+
+fossils %>% 
+  group_by(late_interval) %>%
+  distinct(min_ma.x) %>% 
+  arrange(late_interval)
+```
+
+Finally, let's check the coordinates using the `CoordinateCleaner` package. Looks good.
+```{r}
+#Is the coordinate formatting OK? Numeric and part of a lat/long system?
+coord_check <- cc_val(fossils, lat = "lat", lon = "lng")
+paleocoord_check <- cc_val(fossils, lat = "paleolat", lon = "paleolng")
+
+#Testing for coordinates with equal lat, long
+coord_check <- cc_equ(coord_check, lat = "lat", lon = "lng")
+paleocoord_check <- cc_val(paleocoord_check, lat = "paleolat", lon = "paleolng")
+
+#Near any centroids of modern-day political units or biodiversity centers?
+coord_cent <- cc_cen(coord_check, lat = "lat", lon = "lng", value = "flagged")
+coord_cent <- cc_inst(coord_check, lat = "lat", lon = "lng", value = "flagged")
+
+#any 0s?
+coord_check <- cc_zero(coord_check, lat = "lat", lon = "lng")
+
+#We can also test for temporal mismatches
+coord_check <- coord_check[!is.na(coord_check$min_ma.x),]
+coord_check <- coord_check[!is.na(coord_check$max_ma.x),]
+coord_check <- cf_equal(coord_check, min_age = "min_ma.x", max_age = "max_ma.x")
+```
+
+Overall, our dataset looks to be in good shape!
 
 ## Rule 8: Identify duplicates [ALE]
 
