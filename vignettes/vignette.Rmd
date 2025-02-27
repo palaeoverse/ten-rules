@@ -413,27 +413,22 @@ Overall, our dataset looks to be in good shape!
 
 ## Rule 8: Identify duplicates [ALE]
 
-[library(dplyr)
-library(readr)
-library(ggplot2)
-
-# Download occurrences from Paleobiology Database, these are occurrences for Rupelian (early Oligocene) crocodilians
-url <- "https://paleobiodb.org/data1.2/occs/list.csv?datainfo&rowcount&base_name=Crocodylomorpha&interval=Rupelian&pgm=gplates,scotese,seton&show=full"
-occs <- read.csv(url, stringsAsFactors = FALSE, skip = 19)  # Skip first 19 rows
-
+```{r}
 # Select relevant columns
-occs <- occs %>% select(accepted_name, identified_name, family, lng, lat)
+fossils_geo <- fossils %>% select(accepted_name, identified_name, family, lng, lat)
 
 # Remove duplicates based on geographic coordinates (in some spatial analyses it may be required to retain a single occurrence for spatial collection)
-occs <- occs %>% distinct(lng, lat, .keep_all = TRUE)
+fossils_distinct <- fossils_geo %>% distinct(lng, lat, .keep_all = TRUE)
 
 # Identify and flag taxonomic duplicates, in case we want to estimates diversity metrics for example, a single taxon per locality/collection may be enough
-occs <- occs %>% 
+fossils_distinct <- fossils_distinct %>% 
   group_by(accepted_name) %>% 
   mutate(duplicate_flag = n() > 1)
 
+table(fossils_distinct$duplicate_flag)
+
 # Remove taxonomic duplicates (if flagged - so to keep record of what is duplicate in the dataset and you may want to remove later (see point 9 below)
-cleaned_occurrences <- occs %>% filter(!duplicate_flag)
+cleaned_occurrences <- fossils_distinct %>% filter(!duplicate_flag)
 
 # Save cleaned dataset
 write.csv(cleaned_occurrences, "./all_species_occurrences_CLEANED.csv", row.names = FALSE)
@@ -444,10 +439,12 @@ world <- ne_countries(scale = "medium", returnclass = "sf")
 # Plot occurrences on the world map of different taxonomic entities included in your dataset (using pbdb accepted_name as argument)
 ggplot(data = world) +
   geom_sf(fill = "gray90", color = "black") +
-  geom_point(data = cleaned_occurrences, aes(x = lng, y = lat, color = accepted_name), alpha = 0.7, size = 2) +
+  geom_point(data = cleaned_occurrences, aes(x = lng, y = lat),
+             alpha = 0.7, size = 2) +
   theme_minimal() +
   labs(title = "Crocodylomorpha Occurrences", x = "Longitude", y = "Latitude") +
   theme(legend.position = "bottom")
+```
 
 ## Rule 9: Report your data cleaning efforts
 
