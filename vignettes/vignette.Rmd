@@ -22,8 +22,10 @@ Here we present a full example workflow that complies with the 10 Rules we propo
 
 ## Load packages
 
+Before starting, we will load all of the R packages we need.
+
 ```{r load_packages, message = FALSE}
-#install.packages(c("dplyr", "palaeoverse", "readr", "ggplot2", "deeptime", "rnaturalearth", "rnaturalearthdata", "rgplates"))
+#install.packages(c("dplyr", "palaeoverse", "readr", "ggplot2", "deeptime", "rnaturalearth", "rnaturalearthdata", "rgplates", "fossilbrush", "CoordinateCleaner"))
 library(dplyr)
 library(palaeoverse)
 library(readr)
@@ -42,11 +44,9 @@ In this example, we will explore, clean and interrogate the fossil record of cro
 
 ## Rule 2: Keep raw data raw
 
-[Bethany]
-
 <!--# Would it be better to download directly from the API and show the first step as saving the file? -->
 
-We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
+We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically, this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
 
 For our dataset, we pulled all occurrences associated with the taxon "Crocodylia", dated to the "Paleogene", in the form of a ".csv" file. All other settings were left at default. We will see later in the vignette what this means in terms of what is contained within the dataset.
 
@@ -63,9 +63,9 @@ metadata <- metadata[1:23,]
 metadata
 ```
 
-The metadata are strangely formatted here, but we can see that they include information about the data license (CC0), the API call used (under the label 'Data URL'), the date and time at which the data were accessed, and the total number of records contained within the dataset.
+The metadata are strangely formatted here, but we can see that they include information about the data license (CC0), the API call used (under the label 'Data URL'), the date and time at which the data were accessed, and the total number of records contained within the dataset (here, 886 fossil occurrences).
 
-These metadata elements are all important information to retain alongside our data, allowing others to better understand what the dataset contains, and when and how it was downloaded. The Paleobiology Database is fully dynamic, not only in that new data is continually being added, but also any record can be changed retrospectively by an Editor. It cannot be assumed that the 'present' state of any data point was the same in the past. So, for example, if someone wanted to see how the data associated with this API call had changed in the time elapsed since our download, they could do this, and directly in R if desired:
+These metadata elements are all important information to retain alongside our data, allowing others to better understand what the dataset contains, and when and how it was downloaded. The Paleobiology Database is fully dynamic, not only in that new data is continually being added, but also in that any record can be changed retrospectively by an Editor. It cannot be assumed that the 'present' state of any data point was the same in the (historical) past. So, for example, if someone wanted to see how the data associated with this API call had changed in the time elapsed since our download, they could do this, and directly in R if desired:
 
 ```{r API_call, eval = FALSE}
 # Pull API URL
@@ -74,7 +74,7 @@ metadata[5,2]
 new_data <- read.csv(metadata[5,2], header = TRUE)
 ```
 
-While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the `skip` parameter in `read.csv`, which tells R to ignore the given number of rows at the top of the file.
+While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the `skip` parameter in `read.csv`, which tells R to ignore a given number of rows at the top of the file.
 
 ```{r read_raw, message = FALSE}
 fossils <- read_csv("../data/Paleogene_crocs.csv", skip = 19)
@@ -84,19 +84,15 @@ And now we are ready to commence our data exploration and cleaning.
 
 ## Rule 3: Document your workflow
 
-[All]
-
 Documenting your workflow is essential for ensuring that others can understand and replicate all steps. Using programming languages such as R or Python makes this easy, as the code used can be provided alongside the data. Our vignette gives an example of how `markdown` can be a particularly useful tool for integrating code with prose, ensuring that everything is fully explained, and providing plots integrated within the text when exported.
 
 Our tips for good documentation in R include:
 - Following general guidelines for good coding, such as ample use of spacing to help human readability
 - Having a clear, overarching code structure (such as subheadings, and an order which corresponds to the flow of the research methods/results)
 - Using logical yet short variable names
-- Including comments throughout which explain both *what* and *why*, 
+- Including comments throughout which explain both *what* and *why*
 
 ## Rule 4: Explore your data
-
-[Will]
 
 The first thing we want to do with our data is *explore* it - that is, generate summary statistics and plots to help us understand the data and its various characteristics.
 
@@ -104,19 +100,19 @@ For example, we can look at the distribution of identification levels for our fo
 
 ```{r ID_distribution}
 # Count the frequency of taxonomic ranks, and add a column which calculates the proportion
-count(fossils, accepted_rank) %>% mutate(fraction = (n/nrow(fossils) * 100))
+count(fossils, accepted_rank) %>% mutate(percentage = (n/nrow(fossils) * 100))
 ```
 
 We can see that of our 886 occurrences, 250 (28%) are identified to species level. A further 254 (29%) are identified to genus level. The remaining fossils are more coarsely identified, including 365 (41%) which are identified to the mysterious level of "unranked clade".
 
-Next, let's look at the distribution of fossils across localities. In the PBDB, fossils are placed within collections, each of which can roughly be considered a separate locality (they can also represent different sampling horizons at the same locality). First, we can count the number of unique `collection_no` values to find out how many unique collections are in the dataset.
+Next, let's look at the distribution of fossils across localities. In the PBDB, fossils are placed within collections, each of which can roughly be considered a separate locality (they can also represent different sampling horizons at the same locality; more on this later). First, we can count the number of unique `collection_no` values to find out how many unique collections are in the dataset.
 
 ```{r unique_colls}
 # What is the length of a vector of unique collection numbers?
 length(unique(fossils$collection_no))
 ```
 
-Our dataset contains 720 unique localities. We can also create a plot showing us the distribution of occurrences across these localities.
+Our dataset contains 720 unique collections. We can also create a plot showing us the distribution of occurrences across these collections.
 
 ```{r abundance_distribution}
 # Create a plot showing the number of fossils in each collection
@@ -148,8 +144,6 @@ Something weird has happened here: we can see that once the countries have been 
 
 ## Rule 5: Handle incomplete data records
 
-[?]
-
 By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as `read.csv()`, empty cells are given an `NA` value ('not applicable') only when the column is considered to contain numerical data. When we use `Tidyverse` functions, such as `readr::read_csv()`, *all* empty cells are given `NA` values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are `NA`.
 
 The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of `NA` values for the `collection_no` is 0.
@@ -170,7 +164,7 @@ sum(is.na(fossils$genus))
 
 The value here is 382. This corresponds to the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.
 
-What can, or should, we do about this? It depends heavily on the intersection between the different variables in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are).
+What can, or should, we do about this? It depends heavily on the intersection between the different fields in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are).
 
 Alternatively, it might be approriate to filter these values out. For our crocodile example, we are interested in biogeography, so the latitude and longitude, and palaeolatitude and palaeolongitude, are pretty important. Do we have missing values there?
 
@@ -192,7 +186,7 @@ sum(is.na(fossils$paleolat))
 sum(is.na(fossils$paleolng))
 ```
 
-A further option applicable in some cases would be to fill in our `NA`s. We may be able to interpolate values from the rest of our data, or use additional data sources. For our palaeogeography example above, we could generate our own coordinates, for example using `palaeoverse::palaeorotate()`.
+A further option applicable in some cases would be to fill in our missing data. We may be able to interpolate values from the rest of our data, or use additional data sources. For our palaeogeography example above, we could generate our own coordinates, for example using `palaeoverse::palaeorotate()`.
 
 Let's revisit our country example from Rule 5. Does our list of country codes contain NAs?
 
@@ -201,13 +195,11 @@ Let's revisit our country example from Rule 5. Does our list of country codes co
 sum(is.na(fossils$cc...36))
 ```
 
-Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation should any apparent errors arise in the dataset.
+Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation should any apparent errors arise in the dataset, rather than impulsively removing these data points.
 
 ## Rule 6: Identify outliers
 
-[Bethany]
-
-Next we want to focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?
+Next, we want to focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?
 
 ```{r map}
 # Load in a world map
@@ -271,7 +263,7 @@ Antarctic$identified_name
 
 Since all three occurrences are listed as "Crocodylia indet.", it may make sense to remove them from further analyses anyway.
 
-Let's investigate if there are any other anomalies or outliers in our data. We'll bin the occurrences by stage to look for stage-level outliers.
+Let's investigate if there are any other anomalies or outliers in our data. We'll bin the occurrences by stage to look for stage-level outliers, using boxplots to show us any anomalous data points.
 
 ```{r lat_time_binned}
 # Put occurrences into stage bins
@@ -289,7 +281,7 @@ ggplot(fossils, aes(x = mid_ma, y = paleolat, fill = interval_name)) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in a graph. Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a paleogeographic map to investigate further.
+Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a paleogeographic map to investigate further.
 
 ```{r map_ypresian}
 # Load map of the Ypresian, and identify Ypresian fossils
@@ -322,64 +314,75 @@ So to sum up, it seems that our outliers are not concerning, so we will leave th
 ## Rule 7: Identify inconsistencies
 
 We're now going to look for inconsistencies in our dataset. Let's start by revisiting its structure, focusing on whether the class types of the variables make sense.
-```{r}
+
+```{r check_classes}
 str(fossils)
 ```
 
-Looks reasonable. Now let's dive in further to look for inconsistencies in spelling, which could cause taxonomic or geological units to be grouped separately when they are really the same thing. We'll start by checking for potential taxonomic misspellings.
+Looks reasonable. For example, we can see that our collection IDs are `numerical`, and our `identified_name` column contains `character` strings. Now let's dive in further to look for inconsistencies in spelling, which could cause taxonomic names or geological units to be grouped separately when they are really the same thing. We'll start by checking for potential taxonomic misspellings.
+
+<!--# The database's taxonomic structure means that spelling mistakes cannot arise in 'accepted_name', and 'identified_name' is bad to check when uncertainty is included because it just flags all the e.g. "n. sp.". However, this code (and explanation) could be useful to others using different data sources. We could (a) leave it as-is, (b) refocus this section on formation names, which do not have this issue, or (c) filter out uncertain occurrences in the initial download and use 'identified_name'. At present we don't discuss the uncertainty identifiers in the vignette, these could be added, or we could just change the download and remove them. All options!-->
 
 We can use the table() function to look at the frequencies of various families and genera in the dataset. Here, inconsistencies like misspellings or antiquated taxonomic names might be recognized.
-```{r}
-#Tabulating the frequency of values in the "family" and "genus" columns
+
+<!--# We've used both `table()` and `count()` to generate tallies, we should probably pick one and unify-->
+
+```{r count_names}
+# Tabulating the frequency of values in the "family" and "genus" columns
 table(fossils$family)
 table(fossils$genus)
 
-#We can do the same for the specific identifications. There's some variation to check here, depending on the desired taxonomic resolution of our analysis.
-table(fossils$identified_name)
+# We can do the same for the specific identifications. There's some variation to check here, depending on the desired taxonomic resolution of our analysis.
 table(fossils$accepted_name)
 ```
 
-Alternatively, we can use the tax_check() function in the `palaeoverse` package, which systematically searches for and flags potential spelling variation using a defined dissimilarity threshold.
-```{r}
-#Let's see if there are any close spellings in the "genus" column
-tax_spell_genus <- tax_check(taxdf=fossils,name="genus",dis=0.1)
-tax_spell_genus
+Alternatively, we can use the `tax_check()` function in the `palaeoverse` package, which systematically searches for and flags potential spelling variation using a defined dissimilarity threshold.
 
-#We'll do the same for "accepted name" column
-tax_spell_name <- tax_check(taxdf=fossils,name="accepted_name",dis=0.1)
-tax_spell_name #Here, some similar names are flagged but appear to be separate but similarly spelled taxonomic groups.
+```{r tax_check_names}
+# Check for close spellings in the "genus" column
+tax_check(taxdf = fossils, name = "genus", dis = 0.1)
+
+# Check for close spellings in the "accepted_name" column
+tax_check(taxdf = fossils, name = "accepted_name" , dis = 0.1)
 ```
 
-We can also check the formatting and spelling using the `fossilbrush` package. As above, no major inconsistencies or potential spelling errors were flagged.
-```{r}
-#Creating a list of taxonomic ranks to check
-fossil_ranks <- c("phylum","class","order","family","genus")
+Here, some similar names are flagged but all appear to be separate but similarly spelled taxonomic groups.
 
-#Making the dataframe to check
+We can also check formatting and spelling using the `fossilbrush` package.
+
+```{r fossilbrush_names}
+# Create a list of taxonomic ranks to check
+fossil_ranks <- c("phylum", "class", "order", "family", "genus")
+
+# Convert data tibble to data frame
 fossils_df <- as.data.frame(fossils)
 
-#Running the checks
-tax_spell_fb <- check_taxonomy(fossils_df, ranks = fossil_ranks)
-tax_spell_fb   #looking closer, the rows with "NO_FAMILY_SPECIFIED" are flagged given the extra characters
+# Run checks
+check_taxonomy(fossils_df, ranks = fossil_ranks)
 ```
 
-Let's also check the formation names while we're at it. Here, we see some potential spelling variations that will need to be corrected if we wish to use the formations in our analysis.
-```{r}
-#Tabulating the frequency of each formation
+As before, no major inconsistencies or potential spelling errors were flagged.
+
+Let's also check the formation names while we're at it. This could be important if, for example, we wanted to include information about the number of formations from which our fossils are taken within the manuscript - a misspelling could inflate our count.
+
+```{r check_formations}
+# Tabulating the frequency of each formation
 table(fossils$formation)
 
-#Checking for spelling variation...note some potential misspellings here!
-formation_spell <- tax_check(taxdf=fossils,name="formation",dis=0.1)
-formation_spell
+# Checking for spelling variation
+tax_check(taxdf = fossils, name = "formation", dis = 0.1)
 ```
 
-We can also look for inconsistencies in the interval names and dates (e.g., if an interval is spelled two different ways or has multiple associated dates).
-```{r}
-#Again, we can use the table() function to tabulate the frequency of each interval
+Here, we see four flagged formation name pairs, which vary in how problematic they seem. For example "Couche II" and "Couche I" make sense as an adjacent pair of formations, and likely are not a mistake. However, we also see "San Sebastián" and "San Sebastian", which should be unified under the same name, either with or without the accent included.
+
+We can also look for inconsistencies in the interval names and dates. For example, an interval could be spelled two different ways, or have multiple associated dates.
+
+```{r check_ages}
+# Again, we can use the table() function to tabulate the frequency of each interval
 table(fossils$early_interval)
 table(fossils$late_interval)
 
-#What are the ages associated with each interval? Any issues with the date formats?
+# What are the ages associated with each interval? Any issues with the date formats?
 fossils %>% 
   group_by(early_interval) %>% #grouping by interval
   distinct(max_ma.x) %>%  #pulling out the distinct values
@@ -391,24 +394,25 @@ fossils %>%
   arrange(late_interval)
 ```
 
-Finally, let's check the coordinates using the `CoordinateCleaner` package. Looks good.
-```{r}
-#Is the coordinate formatting OK? Numeric and part of a lat/long system?
+Finally, let's check the coordinates using the `CoordinateCleaner` package.
+
+```{r check_coords}
+# Is the coordinate formatting OK? Numeric and part of a lat/long system?
 coord_check <- cc_val(fossils, lat = "lat", lon = "lng")
 paleocoord_check <- cc_val(fossils, lat = "paleolat", lon = "paleolng")
 
-#Testing for coordinates with equal lat, long
+# Testing for coordinates with equal lat and long
 coord_check <- cc_equ(coord_check, lat = "lat", lon = "lng")
 paleocoord_check <- cc_val(paleocoord_check, lat = "paleolat", lon = "paleolng")
 
-#Near any centroids of modern-day political units or biodiversity centers?
+# Near any centroids of modern-day political units or biodiversity centers?
 coord_cent <- cc_cen(coord_check, lat = "lat", lon = "lng", value = "flagged")
 coord_cent <- cc_inst(coord_check, lat = "lat", lon = "lng", value = "flagged")
 
-#any 0s?
+# Any zeros?
 coord_check <- cc_zero(coord_check, lat = "lat", lon = "lng")
 
-#We can also test for temporal mismatches
+# We can also test for temporal mismatches
 coord_check <- coord_check[!is.na(coord_check$min_ma.x),]
 coord_check <- coord_check[!is.na(coord_check$max_ma.x),]
 coord_check <- cf_equal(coord_check, min_age = "min_ma.x", max_age = "max_ma.x")
@@ -418,52 +422,75 @@ Overall, our dataset looks to be in good shape!
 
 ## Rule 8: Identify duplicates
 
-[ALE]
+Our next step is to remove duplicates. This is also an important step for count data, as duplicated values will artificially inflate our counts. Here, the function `dplyr::distinct()` is incredibly useful, as we can provide it with the columns we want it to check, and it removes rows for which data within those columns is identical.
 
-```{r}
-# Select relevant columns
-fossils_geo <- fossils %>% select(accepted_name, identified_name, family, lng, lat)
+First, we will remove *absolute* duplicates: by this, we mean occurrences within a single collection which have identical taxonomic names. This can occur when, for example, two species are named within a collection, one of which is later synonymised with the other.
 
-# Remove duplicates based on geographic coordinates (in some spatial analyses it may be required to retain a single occurrence for spatial collection)
-fossils_distinct <- fossils_geo %>% distinct(lng, lat, .keep_all = TRUE)
+```{r abs_duplicates}
+# Show number of rows in dataset before duplicates are removed
+nrow(fossils)
 
-# Identify and flag taxonomic duplicates, in case we want to estimates diversity metrics for example, a single taxon per locality/collection may be enough
-fossils_distinct <- fossils_distinct %>% 
-  group_by(accepted_name) %>% 
+# Remove occurrences with the same collection number and `accepted_name`
+fossils <- distinct(fossils, collection_no, accepted_name, .keep_all = TRUE)
+
+# Show number of rows in dataset after duplicates are removed
+nrow(fossils)
+```
+
+The number of rows dropped from 868 to 844 - this means 24 of our occurrences were absolute duplicates, which have now been removed.
+
+Next, we can look at geographic duplicates. We mentioned earlier that sometimes PBDB collections are entered separately for different beds from the same locality, and this means that the number of collections can be higher than the number of geographic sampling localities. Let's check whether this is the case in our dataset.
+
+```{r geo_duplicates}
+# Remove duplicates based on geographic coordinates
+fossils_localities <- fossils %>% distinct(lng, lat, .keep_all = TRUE)
+
+# Compare length of vector of unique collection numbers with and without this filter
+length(unique(fossils$collection_no))
+length(unique(fossils_localities$collection_no))
+```
+
+Here we can see that our original dataset contains 703 collections, but once we remove latitude-longitude repeats, this drops to 518. This means that we have 518 geographically distinct localities, across which 703 fossil sampling events have taken place.
+
+If we are interested in taxonomic diversity, we can also look at repeated names in our dataset. For example, we might want to identify taxa which are represented multiple times in order to then return to the literature and check that they definitely represent the same taxon. We can do this by flagging names which are represented more than once in the dataset.
+
+```{r taxon_duplicates}
+# Filter dataset to taxon occurrences which are IDed to genus or species level
+fossils_genera <- filter(fossils, !is.na(genus))
+
+# Identify and flag taxonomic duplicates
+fossils_genera <- fossils_genera %>% 
+  group_by(genus) %>% 
   mutate(duplicate_flag = n() > 1)
 
-table(fossils_distinct$duplicate_flag)
+# Show counts of flagged occurrences
+table(fossils_genera$duplicate_flag)
+```
 
-# Remove taxonomic duplicates (if flagged - so to keep record of what is duplicate in the dataset and you may want to remove later (see point 9 below)
-cleaned_occurrences <- fossils_distinct %>% filter(!duplicate_flag)
+Our counts show 31 `FALSE` values, indicating that 31 genera are represented by a single occurrence. We also have 458 `TRUE` values, for which the genus is represented two or more times. We can then filter our dataset to those flagged, and sort them by their genus, enabling easier checking.
 
-# Save cleaned dataset
-write.csv(cleaned_occurrences, "./all_species_occurrences_CLEANED.csv", row.names = FALSE)
+```{r table_duplicates}
+# Filter table to flagged occurrences
+fossils_genera <- filter(fossils_genera, duplicate_flag == TRUE)
 
-# Convert to spatial data to plot the occurrences on a map
-world <- ne_countries(scale = "medium", returnclass = "sf")
-
-# Plot occurrences on the world map of different taxonomic entities included in your dataset (using pbdb accepted_name as argument)
-ggplot(data = world) +
-  geom_sf(fill = "gray90", color = "black") +
-  geom_point(data = cleaned_occurrences, aes(x = lng, y = lat),
-             alpha = 0.7, size = 2) +
-  theme_minimal() +
-  labs(title = "Crocodylomorpha Occurrences", x = "Longitude", y = "Latitude") +
-  theme(legend.position = "bottom")
+# Sort table by genus name
+fossils_genera <- arrange(fossils_genera, genus)
 ```
 
 ## Rule 9: Report your data and cleaning efforts
 
-[All]
+It is important to report the steps you took in cleaning and processing your data. When any code used to achieve this is presented alongside the manuscript, this is particularly easy, as any specific details which readers may be interested in can be checked within the code. As a result, the written description can be kept brief. An example outlining our workflow above is as follows:
 
-"Here is what we would write in the paper"
+"We downloaded all fossil occurrence data for Paleogene Crocodylia from the Paleobiology Database on 21st February 2025 (see supplementary data). Data were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
+
+<!--# This is a bit rough because we do a lot of exploration but not a lot of implementation at present? Maybe we could also introduce a clear graph that we are trying to make, enact appropriate steps throughout, then produce the graph at the end. -->
 
 ## Rule 10: Deposit your data and workflow
 
-[Will]
 Now that we've completed our data cleaning and exploration, we want to make sure that our data and workflow are well-documented and easily accessible to others. To this end, we have developed this vignette, which we have been maintaining within a [repository on GitHub](https://github.com/palaeoverse/ten-rules) throughout the development of our project. This vignette contains all of the code used to clean and explore our data, as well as explanations of each step. We have also included the [raw data file](https://github.com/palaeoverse/ten-rules/blob/main/data/Paleogene_crocs.csv) in the repository, so that others can download and use it for their own analyses. We have made sure to include all of the necessary metadata in the raw data file, so that others can understand where the data came from and how it was processed. With all of this, other researchers are able to run this vignette locally and follow our proposed rules step-by-step.
 
 To ensure our workflow is citable, we have linked our GitHub repository to [Zenodo](https://doi.org/10.5281/zenodo.14938533), which now archives each [release](https://github.com/palaeoverse/ten-rules/releases) of our repository and provides a DOI for citation. We have also included a [copyleft license](https://github.com/palaeoverse/ten-rules/blob/main/LICENSE) to ensure that others can use and build upon our work.
 
 ## Summary
+
+We hope that this vignette illustrates how the 10 Rules can be put into action.
