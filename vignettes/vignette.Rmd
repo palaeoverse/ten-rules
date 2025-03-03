@@ -462,5 +462,8 @@ ggplot(data = world) +
 ## Rule 10: Deposit your data and workflow
 
 [Will]
+Now that we've completed our data cleaning and exploration, we want to make sure that our data and workflow are well-documented and easily accessible to others. To this end, we have developed this vignette, which we have been maintaining within a [repository on GitHub](https://github.com/palaeoverse/ten-rules) throughout the development of our project. This vignette contains all of the code used to clean and explore our data, as well as explanations of each step. We have also included the [raw data file](https://github.com/palaeoverse/ten-rules/blob/main/data/Paleogene_crocs.csv) in the repository, so that others can download and use it for their own analyses. We have made sure to include all of the necessary metadata in the raw data file, so that others can understand where the data came from and how it was processed. With all of this, other researchers are able to run this vignette locally and follow our proposed rules step-by-step.
+
+To ensure our workflow is citable, we have linked our GitHub repository to [Zenodo](https://doi.org/10.5281/zenodo.14938533), which now archives each [release](https://github.com/palaeoverse/ten-rules/releases) of our repository and provides a DOI for citation. We have also included a [copyleft license](https://github.com/palaeoverse/ten-rules/blob/main/LICENSE) to ensure that others can use and build upon our work.
 
 ## Summary
