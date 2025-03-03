@@ -1,7 +1,10 @@
 ---
 title: "10 Rules vignette"
 author: "The Palaeoverse Development Team"
-output: rmarkdown::html_vignette
+output:
+  html_document:
+    toc: true
+    toc_float: true
 vignette: >
   %\VignetteIndexEntry{10 Rules vignette}
   %\VignetteEngine{knitr::rmarkdown}
@@ -13,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
                       out.width = "100%", fig.width = 7.2, fig.height = 4)
 ```
 
-# Introduction
+## Introduction
 
 Here we present a full example workflow that complies with the 10 Rules we propose in the manuscript.
 
@@ -33,14 +36,15 @@ library(fossilbrush)
 library(CoordinateCleaner)
 ```
 
-## Rule 1: Know your data and question
+## Rule 1: Choose the right data for your question
 
 In this example, we will explore, clean and interrogate the fossil record of crocodiles. As ectotherms, crocodiles are highly reliant on the environment in which they live in order to maintain a functional internal body temperature. Because of this, their spatial distribution is constrained to warm climates, so their fossil record is commonly used as an indicator of palaeoclimate. Here we will investigate the palaeodiversity of crocodiles, with the specific goal of reconstructing their biogeographic patterns throughout the Paleogene. The data will be sourced from the [Paleobiology Database](https://paleobiodb.org).
 
 ## Rule 2: Keep raw data raw
 
 [Bethany]
-# Would it be better to download directly from the API and show the first step as saving the file?
+
+<!--# Would it be better to download directly from the API and show the first step as saving the file? -->
 
 We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
 
@@ -234,7 +238,8 @@ ggplot(fossils, aes(x = mid_age, y = lat)) +
 ```
 
 When we look at latitude through time, these occurrences look even more suspicious.
-# Can we make the occurrences for Antarctica a different colour compared to the rest?
+
+<!--# Can we make the occurrences for Antarctica a different colour compared to the rest?-->
 
 But, wait, we should actually be looking at **paleo**latitude instead. Let's plot that against time.
 
@@ -411,7 +416,9 @@ coord_check <- cf_equal(coord_check, min_age = "min_ma.x", max_age = "max_ma.x")
 
 Overall, our dataset looks to be in good shape!
 
-## Rule 8: Identify duplicates [ALE]
+## Rule 8: Identify duplicates
+
+[ALE]
 
 ```{r}
 # Select relevant columns
@@ -446,14 +453,14 @@ ggplot(data = world) +
   theme(legend.position = "bottom")
 ```
 
-## Rule 9: Report your data cleaning efforts
+## Rule 9: Report your data and cleaning efforts
 
 [All]
 
 "Here is what we would write in the paper"
 
-## Rule 10: Deposit your data workflow and recording
+## Rule 10: Deposit your data and workflow
 
 [Will]
 
-# Summary
+## Summary
