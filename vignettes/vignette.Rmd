@@ -49,9 +49,6 @@ In this example, we will explore, clean and interrogate the fossil record of cro
 
 ## Rule 2: Keep raw data raw
 
-<!--# Would it be better to download directly from the API and show the first step as saving the file? -->
-<!--RESPONSE: I think it is fine either way - I had originally thought it would be better to download directly but the way you have it set up with the metadata is pretty great  -->
-
 We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically, this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
 
 For our dataset, we pulled all occurrences associated with the taxon "Crocodylia", dated to the "Paleogene", in the form of a ".csv" file. All other settings were left at default. We will see later in the vignette what this means in terms of what is contained within the dataset.
@@ -60,9 +57,9 @@ For reproducibility, we want to make sure that we have a copy of the full datase
 
 We can load and view the metadata to see what it includes.
 
-```{r read_metadata}
+```{r read_metadata, message = FALSE}
 # Load data file
-metadata <- read.csv("data/Paleogene_crocs.csv")
+metadata <- read_csv("../data/Paleogene_crocs.csv")
 # Trim to metadata
 metadata <- metadata[1:23, ]
 # Print
@@ -77,15 +74,15 @@ These metadata elements are all important information to retain alongside our da
 # View API URL
 metadata[5, 2]
 # Use API call (this is not enacted here)
-new_data <- read.csv(metadata[5, 2], header = TRUE)
+new_data <- read_csv(metadata[5, 2], header = TRUE)
 ```
 
 While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the `skip` parameter in `read_csv`, which tells R to ignore a given number of rows at the top of the file.
 
-<!-- We use read.csv elsewhere so makes sense to do the same. Also I spotted that we have two cc columns (cc and cc.1) which is making us have funky column names? -->
+<!-- I spotted that we have two cc columns (cc and cc.1) which is making us have funky column names? -->
 
 ```{r read_raw, message = FALSE}
-fossils <- read_csv("data/Paleogene_crocs.csv", skip = 19)
+fossils <- read_csv("../data/Paleogene_crocs.csv", skip = 19)
 ```
 
 And now we are ready to commence our data exploration and cleaning.
@@ -96,10 +93,12 @@ Documenting your workflow is essential for ensuring that others can understand a
 
 Our tips for good documentation in R include:
 
-- Following general guidelines for good coding, such as ample use of spacing to help human readability
-- Having a clear, overarching code structure (such as subheadings, and an order which corresponds to the flow of the research methods/results)
-- Using logical yet short variable names
-- Including comments throughout which explain both *what* and *why*
+<ul>
+  <li> Following general guidelines for good coding, such as ample use of spacing to help human readability </li>
+  <li> Having a clear, overarching code structure (such as subheadings, and an order which corresponds to the flow of the research methods/results) </li>
+  <li> Using logical yet short variable names </li>
+  <li> Including comments throughout which explain both *what* and *why* </li>
+</ul>
 
 ## Rule 4: Explore your data
 
@@ -109,7 +108,7 @@ For example, we can look at the distribution of identification levels for our fo
 
 ```{r ID_distribution}
 # Count the frequency of taxonomic ranks, and add a column which calculates 
-# the proportion
+# the percentage
 count(fossils, accepted_rank) %>% 
   mutate(percentage = (n/nrow(fossils) * 100))
 ```
@@ -125,15 +124,15 @@ length(unique(fossils$collection_no))
 
 Our dataset contains 720 unique collections. We can also create a plot showing us the distribution of occurrences across these collections.
 
-<!-- I think the below plot is a useful thing to include but because it is so much data, it end ups look not too great at a plot -->
-
-
 ```{r abundance_distribution}
 # Create a plot showing the number of occurrences in each collection
 ggplot(fossils, aes(x = as.factor(collection_no))) +
   geom_histogram(stat = "count") +
-  labs(x = "Collection number",
-       y = "Count")
+  ylim(0, 8) +
+  labs(x = "Collection",
+       y = "Count") +
+  theme(axis.text.x = element_blank(),
+        axis.ticks.x = element_blank())
 ```
 
 We can see that the collection containing the most occurrences has 7, while the vast majority only contain a single occurrence.
