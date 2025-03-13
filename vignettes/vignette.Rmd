@@ -84,7 +84,7 @@ While the metadata is important to keep in the raw file, for the purposes of ana
 
 <!-- I spotted that we have two cc columns (cc and cc.1) which is making us have funky column names? -->
 
-```{r read_raw, message = FALSE}
+```{r read_raw}
 fossils <- read_csv("data/Paleogene_crocs.csv", skip = 19)
 ```
 
@@ -110,10 +110,10 @@ The first thing we want to do with our data is *explore* it - that is, generate 
 For example, we can look at the distribution of identification levels for our fossils.
 
 ```{r ID_distribution}
-# Count the frequency of taxonomic ranks, and add a column which calculates 
-# the percentage
-count(fossils, accepted_rank) %>% 
-  mutate(percentage = (n/nrow(fossils) * 100))
+# Count the frequency of taxonomic ranks
+table(fossils$accepted_rank)
+# Calculate as percentages
+(table(fossils$accepted_rank) / nrow(fossils)) * 100
 ```
 
 We can see that of our 886 occurrences, 250 (28%) are identified to species level. A further 254 (29%) are identified to genus level. The remaining fossils are more coarsely identified, including 365 (41%) which are identified to the mysterious level of "unranked clade".
@@ -180,7 +180,7 @@ sum(is.na(fossils$genus))
 
 The value here is 382. This corresponds to the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.
 
-What can, or should, we do about this? It depends heavily on the intersection between the different fields in the dataset, and our research question. For example, in some instances it might be appropriate to ignore certain `NA` values (for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are).
+What can, or should, we do about this? It depends heavily on the intersection between the different fields in the dataset, and our research question. In some instances it might be appropriate to ignore certain `NA` values: for example, `NA` values for `genus` might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are.
 
 Alternatively, it might be appropriate to filter these values out. For our crocodile example, we are interested in biogeography, so the latitude and longitude, and palaeolatitude and palaeolongitude, are pretty important. Do we have missing values there?
 
@@ -192,7 +192,7 @@ sum(is.na(fossils$paleolat))
 sum(is.na(fossils$paleolng))
 ```
 
-While all occurrences have modern day coordinates, 18 are missing palaeocoordinates. We will now remove these from the dataset.
+While all occurrences have modern day coordinates, 18 are missing palaeocoordinates. We will now remove these 18 occurrences from the dataset.
 
 ```{r remove_geo_NAs}
 # Remove occurrences which are missing palaeocoordinates
@@ -211,11 +211,11 @@ Let's revisit our country example from Rule 5. Does our list of country codes co
 sum(is.na(fossils$cc...36))
 ```
 
-Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation should any apparent errors arise in the dataset, rather than impulsively removing these data points.
+Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation when any apparent errors arise in the dataset, rather than immediately removing these data points.
 
 ## Rule 6: Identify outliers
 
-Next, we want to focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?
+Next, we want to look for outliers. Here we will focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?
 
 ```{r map}
 # Load in a world map
@@ -233,11 +233,13 @@ We have a large density of crocodile occurrences in Europe and the western inter
 
 ```{r lat_time}
 # Add a column to the data frame with the midpoint of the fossil ages
-fossils <- fossils %>%
-  mutate(mid_age = (min_ma + max_ma) / 2)
+fossils <- mutate(fossils, mid_age = (min_ma + max_ma) / 2)
+# Create dataset containing only Antarctic fossils
+Antarctic <- filter(fossils, cc...36 == "AA")
 # Plot the age of each occurrence against its latitude
 ggplot(fossils, aes(x = mid_age, y = lat)) +
-  geom_point() +
+  geom_point(colour = "black") +
+  geom_point(data = Antarctic, colour = "red") +
   labs(x = "Age (Ma)",
        y = "Latitude (º)") +
   scale_x_reverse() +
@@ -245,16 +247,15 @@ ggplot(fossils, aes(x = mid_age, y = lat)) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-When we look at latitude through time, these occurrences look even more suspicious.
-
-<!--# Can we make the occurrences for Antarctica a different colour compared to the rest?-->
+Here we can see the latitude of each occurrence, plotted against the temporal midpoint of the collection. We have highlighted our Antarctic occurrences in red - these points are still looking pretty anomalous.
 
 But, wait, we should actually be looking at **palaeo**latitude instead. Let's plot that against time.
 
 ```{r palaeolat_time}
 # Plot the age of each occurrence against its palaeolatitude
 ggplot(fossils, aes(x = mid_age, y = paleolat)) +
-  geom_point() +
+  geom_point(colour = "black") +
+  geom_point(data = Antarctic, colour = "red") +
   labs(x = "Age (Ma)",
        y = "Palaeolatitude (º)") +
   scale_x_reverse() +
@@ -266,7 +267,6 @@ Hmm... when we look at palaeolatitude the occurrences are even **further** south
 
 ```{r antarctic_colls}
 # Find Antarctic collection numbers
-Antarctic <- filter(fossils, cc...36 == "AA")
 unique(Antarctic$collection_no)
 ```
 
@@ -281,16 +281,16 @@ Since all three occurrences are listed as "Crocodylia indet.", it may make sense
 
 Let's investigate if there are any other anomalies or outliers in our data. We'll bin the occurrences by stage to look for stage-level outliers, using boxplots to show us any anomalous data points.
 
-<!-- The below left join seems to induce duplicate columns, should we avoid by selecting only the required columns from bins? -->
-
 ```{r lat_time_binned}
 # Put occurrences into stage bins
 bins <- time_bins(scale = "international ages")
 fossils <- bin_time(occdf = fossils, bins = bins,
-                    min_ma = "min_ma", max_ma = "max_ma", method = "majority") %>%
-                    left_join(bins, by = c("bin_assignment" = "bin"))
+                    min_ma = "min_ma", max_ma = "max_ma", method = "majority")
+# Add interval name labels to occurrences
+bins <- select(bins, bin, interval_name)
+fossils <- left_join(fossils, bins, by = c("bin_assignment" = "bin"))
 # Plot occurrences
-ggplot(fossils, aes(x = mid_ma, y = paleolat, fill = interval_name)) +
+ggplot(fossils, aes(x = bin_midpoint, y = paleolat, fill = interval_name)) +
   geom_boxplot(scale = "width", show.legend = FALSE) +
   labs(x = "Age (Ma)",
        y = "Palaeolatitude (º)") +
@@ -299,7 +299,9 @@ ggplot(fossils, aes(x = mid_ma, y = paleolat, fill = interval_name)) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a palaeogeographic map to investigate further.
+Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. At time of writing, the guidance for `geom_boxplot()` states that "The upper whisker extends from the hinge to the largest value no further than 1.5 * IQR from the hinge (where IQR is the inter-quartile range, or distance between the first and third quartiles). The lower whisker extends from the hinge to the smallest value at most 1.5 * IQR of the hinge. Data beyond the end of the whiskers are called "outlying" points and are plotted individually." 1.5 times the interquartile range seems a reasonable cut-off for determining outliers, so we will use these plots at face value to identify data points to check.
+
+Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a palaeogeographic map to investigate further.
 
 ```{r map_ypresian}
 # Load map of the Ypresian, and identify Ypresian fossils
@@ -315,7 +317,7 @@ ggplot(fossils_y) +
   coord_sf()
 ```
 
-Aha! There is a concentrated cluster of occurrences in the western interior of North America. This high number of occurrences is increasing the weight of data at this palaeolatitude, and narrowing the boundaries at which other points are considered outliers. Without this strong geographic bias, all of the occurrences in the Ypresian appear to be normal, especially with [elevated temperatures during this time](https://doi.org/10.1038/s41586-018-0272-2).
+Aha! There is a concentrated cluster of occurrences in the western interior of North America. This high number of occurrences is increasing the weight of data at this palaeolatitude, and narrowing the boundaries at which other points are considered outliers. We can check the effect this is having on our outlier identification by removing the US occurrences from the dataset and checking the distribution again.
 
 ```{r lat_ypresian}
 # Remove US fossils from the Ypresian dataset
@@ -323,9 +325,11 @@ fossils_y <- fossils_y %>%
   filter(cc...36 != "US")
 # Plot histogram of Ypresian fossil palaeolatitudes
 ggplot(fossils_y) +
-  geom_histogram(aes(x = paleolat)) +
+  geom_boxplot(aes(y = paleolat)) +
   labs(x = "Palaeolatitude (º)")
 ```
+
+We can now see that none of our occurrences are being flagged as outliers. Without this strong geographic bias towards the US, all of the occurrences in the Ypresian appear to be reasonable. This fits our prior knowledge, as [elevated global temperatures during this time](https://doi.org/10.1038/s41586-018-0272-2) likely helped crocodiles to live at higher latitudes than was possible earlier in the Paleogene.
 
 So to sum up, it seems that our outliers are not concerning, so we will leave them in our dataset and continue with our analytical pipeline.
 
