@@ -11,7 +11,7 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 library(formatR)
 knitr::opts_chunk$set(root.dir = '..',
                       echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
@@ -21,9 +21,10 @@ knitr::opts_chunk$set(root.dir = '..',
 
 ## Introduction
 
-Here we present a full example workflow that complies with the ten rules we propose in the manuscript.
+This vignette is an accompaniment to:
+Jones LA, Dean CD, Allen BJ, Drage HB, Flannery-Sutherland JT, Chiarenza AA, Dillon EM, Farina BM, Gearty W, Godoy PL. Ten simple rules to follow when cleaning occurence data in palaeobiology.
 
-<!-- INSERT EVENTUAL PUBLICATION CITATION -->
+Here we present a full example workflow that complies with the ten rules we propose in the manuscript. The intention is to provide further details and ideas to the concepts outlined in the manuscript, as well as code that can be repurposed by readers.
 
 ## Load packages
 
@@ -45,21 +46,23 @@ library(rnaturalearthdata)
 
 ## Rule 1: Choose the right data for your question
 
-In this example, we will explore, clean and interrogate the fossil record of crocodiles. As ectotherms, crocodiles are highly reliant on the environment in which they live in order to maintain a functional internal body temperature. Because of this, their spatial distribution is constrained to warm climates, so their fossil record is commonly used as an indicator of palaeoclimate. Here we will investigate the palaeodiversity of crocodiles, with the specific goal of reconstructing their biogeographic patterns throughout the Paleogene. The data will be sourced from the [Paleobiology Database](https://paleobiodb.org).
+In this example, we are interested in the fossil record of crocodiles. As ectotherms, crocodiles are highly reliant on the environment in which they live in order to maintain a functional internal body temperature. Because of this, their spatial distribution is constrained to warm climates, so their fossil record is commonly used as an indicator of palaeoclimate. Here we will investigate the palaeodiversity of crocodiles, with the specific goal of reconstructing their latitudinal range throughout the Paleogene.
+
+To meet this goal, we need to acquire occurrence data for fossil crocodiles throughout the Paleogene. Initially we have decided not to place further taxonomic constraints on our search, so we will include all occurrences belonging to the order 'Crocodylia'. We are interested in the clade's biogeography, so we will need all occurrences globally, and we need to ensure that we have geographic coordinates associated with our occurrences.
+
+We will turn to one of the largest sources of fossil occurrence data, the [Paleobiology Database](https://paleobiodb.org). We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically, this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
+
+For our dataset, we pulled all occurrences associated with the taxon name 'Crocodylia', dated to the 'Paleogene'. All other settings were left at default. We obtained the standard (or recommended) data fields by checking the box to "Include all output blocks whose names are boldfaced below", and obtained our data in the form of a '.csv' file. We will see later in the vignette what this means in terms of what is contained within the dataset.
 
 ## Rule 2: Keep raw data raw
 
-We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically, this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
-
-For our dataset, we pulled all occurrences associated with the taxon "Crocodylia", dated to the "Paleogene", in the form of a ".csv" file. All other settings were left at default. We will see later in the vignette what this means in terms of what is contained within the dataset.
-
-For reproducibility, we want to make sure that we have a copy of the full dataset as initially downloaded - this is the "raw" data. Automatically, when we use the online form, there is an output option checked which is labelled 'Include metadata at the beginning of the output'. This ensures that the raw data file includes a metadata 'header', which contains useful information linked to the dataset.
+For reproducibility, we want to make sure that we have a copy of the full dataset as initially downloaded - this is the "raw" data. Automatically, when we use the online form, there is an output option checked which is labelled "Include metadata at the beginning of the output". This ensures that the raw data file includes a metadata 'header', which contains useful information linked to the dataset.
 
 We can load and view the metadata to see what it includes.
 
 ```{r read_metadata, message = FALSE}
 # Load data file
-metadata <- read_csv("../data/Paleogene_crocs.csv")
+metadata <- read_csv("data/Paleogene_crocs.csv")
 # Trim to metadata
 metadata <- metadata[1:23, ]
 # Print
@@ -82,7 +85,7 @@ While the metadata is important to keep in the raw file, for the purposes of ana
 <!-- I spotted that we have two cc columns (cc and cc.1) which is making us have funky column names? -->
 
 ```{r read_raw, message = FALSE}
-fossils <- read_csv("../data/Paleogene_crocs.csv", skip = 19)
+fossils <- read_csv("data/Paleogene_crocs.csv", skip = 19)
 ```
 
 And now we are ready to commence our data exploration and cleaning.
@@ -95,7 +98,7 @@ Our tips for good documentation in R include:
 
 <ul>
   <li> Following general guidelines for good coding, such as ample use of spacing to help human readability </li>
-  <li> Having a clear, overarching code structure (such as subheadings, and an order which corresponds to the flow of the research methods/results) </li>
+  <li> Having a clear, overarching code structure (such as subsections, which can be denoted with headings and "#====" notation, and an order which corresponds to the flow of the research methods/results) </li>
   <li> Using logical yet short variable names </li>
   <li> Including comments throughout which explain both *what* and *why* </li>
 </ul>
@@ -499,7 +502,7 @@ fossils_genera <- arrange(fossils_genera, genus)
 
 It is important to report the steps you took in cleaning and processing your data. When any code used to achieve this is presented alongside the manuscript, this is particularly easy, as any specific details which readers may be interested in can be checked within the code. As a result, the written description can be kept brief. An example outlining our workflow above is as follows:
 
-"We downloaded all fossil occurrence data for Paleogene Crocodylia from the Paleobiology Database on 21st February 2025 (see supplementary data). Data were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
+"We downloaded all fossil occurrence data for the taxon 'Crocodylia', dated to the time interval 'Paleogene' (66 - 23Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Data were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
 
 <!--# This is a bit rough because we do a lot of exploration but not a lot of implementation at present? Maybe we could also introduce a clear graph that we are trying to make, enact appropriate steps throughout, then produce the graph at the end. -->
 
