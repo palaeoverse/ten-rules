@@ -16,7 +16,7 @@ library(formatR)
 knitr::opts_chunk$set(root.dir = '..',
                       echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
                       out.width = "100%", fig.width = 7.2, fig.height = 4,
-                      tidy.opts = list(width.cutoff = 78), tidy = TRUE)
+                      tidy.opts = list(width.cutoff = 78))
 ```
 
 ## Introduction
@@ -62,7 +62,7 @@ We can load and view the metadata to see what it includes.
 
 ```{r read_metadata, message = FALSE}
 # Load data file
-metadata <- read_csv("data/Paleogene_crocs.csv")
+metadata <- read_csv("../data/Paleogene_crocs.csv")
 
 # Trim to metadata
 metadata <- metadata[1:23, ]
@@ -87,9 +87,9 @@ While the metadata is important to keep in the raw file, for the purposes of ana
 
 <!-- I spotted that we have two cc columns (cc and cc.1) which is making us have funky column names? -->
 
-```{r read_raw}
+```{r read_raw, message = FALSE}
 # Load data file, skipping metadata
-fossils <- read_csv("data/Paleogene_crocs.csv", skip = 19)
+fossils <- read_csv("../data/Paleogene_crocs.csv", skip = 19)
 ```
 
 And now we are ready to commence our data exploration and cleaning.
@@ -132,15 +132,16 @@ length(unique(fossils$collection_no))
 
 Our dataset contains 720 unique collections. We can also create a plot showing us the distribution of occurrences across these collections.
 
-```{r abundance_distribution}
-# Create a plot showing the number of occurrences in each collection
-ggplot(fossils, aes(x = as.factor(collection_no))) +
+```{r abundance_distribution, message = FALSE}
+# Count the number of times each collection number appears in the dataset
+coll_no_freq <- as.data.frame(table(fossils$collection_no))
+
+# Plot the distribution of number of occurrences per collection
+ggplot(coll_no_freq, aes(x = Freq)) +
   geom_histogram(stat = "count") +
-  ylim(0, 8) +
-  labs(x = "Collection",
-       y = "Count") +
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+  labs(x = "Number of occurrences",
+       y = "Frequency") +
+  theme()
 ```
 
 We can see that the collection containing the most occurrences has 7, while the vast majority only contain a single occurrence.
@@ -302,7 +303,7 @@ fossils <- left_join(fossils, bins, by = c("bin_assignment" = "bin"))
 
 # Plot occurrences
 ggplot(fossils, aes(x = bin_midpoint, y = paleolat, fill = interval_name)) +
-  geom_boxplot(scale = "width", show.legend = FALSE) +
+  geom_boxplot(show.legend = FALSE) +
   labs(x = "Age (Ma)",
        y = "Palaeolatitude (º)") +
   scale_x_reverse() +
@@ -420,8 +421,7 @@ table(fossils$late_interval)
 fossils %>% 
   group_by(early_interval) %>% # Grouping by interval
   distinct(max_ma) %>%  # Pulling out the distinct values
-  arrange(early_interval) # Putting the list in order so it's easier to scan for
-                          # inconsistencies
+  arrange(early_interval) # Putting list in order to scan for inconsistencies
 
 fossils %>% 
   group_by(late_interval) %>%
@@ -514,7 +514,7 @@ fossils_sp <- arrange(fossils_sp, accepted_name)
 
 We recommend iteratively enacting Rules 4 to 7, because if data are altered or filtered at any point, this can change the overall summary statisitcs, and affect how we perceive the data. Once you are happy with your dataset, it is time to perform any analytical processes relating to your research question - in our simple example, this is quantifying the latitudinal distribution of our occurrences over time.
 
-```{r palaeolat_time}
+```{r final_plot}
 # List geological stages in dataset
 time_bins <- unique(fossils$interval_name)
 
