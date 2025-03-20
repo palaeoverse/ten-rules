@@ -8,6 +8,8 @@ output:
     code_folding: show
     number_sections: FALSE
     global_numbering: FALSE
+    config:
+      download: ["vignette.pdf", "vignette.Rmd"]
 editor_options: 
   chunk_output_type: console
 colorlinks: yes
