@@ -13,8 +13,8 @@ editor_options:
 
 ```{r setup, include = FALSE}
 library(formatR)
-knitr::opts_chunk$set(root.dir = '..',
-                      echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
+knitr::opts_knit$set(root.dir = '..')
+knitr::opts_chunk$set(echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
                       out.width = "100%", fig.width = 7.2, fig.height = 4,
                       tidy.opts = list(width.cutoff = 78))
 ```
@@ -24,14 +24,16 @@ knitr::opts_chunk$set(root.dir = '..',
 This vignette is an accompaniment to:
 Jones LA, Dean CD, Allen BJ, Drage HB, Flannery-Sutherland JT, Chiarenza AA, Dillon EM, Farina BM, Gearty W, Godoy PL. Ten simple rules to follow when cleaning occurence data in palaeobiology.
 
-Here we present a full example workflow that complies with the ten rules we propose in the manuscript. The intention is to provide further details and ideas to the concepts outlined in the manuscript, as well as code that can be repurposed by readers.
+Here we present a full example workflow that complies with the ten rules we propose in the manuscript. The intention is to illustrate the concepts outlined in the manuscript, with further details and ideas for practical implementation, as well as code that can be repurposed by readers.
 
 ## Load packages
 
 Before starting, we will load all of the R packages we need.
 
 ```{r load_packages, message = FALSE}
-# install.packages(c("CoordinateCleaner", "deeptime", "dplyr", "fossilbrush", "ggplot2", "palaeoverse", "readr", "rgplates", "rnaturalearth", "rnaturalearthdata"))
+# install.packages(c("CoordinateCleaner", "deeptime", "dplyr", "fossilbrush",
+# "ggplot2", "palaeoverse", "readr", "rgplates", "rnaturalearth",
+# "rnaturalearthdata"))
 library(CoordinateCleaner)
 library(deeptime)
 library(dplyr)
@@ -62,7 +64,7 @@ We can load and view the metadata to see what it includes.
 
 ```{r read_metadata, message = FALSE}
 # Load data file
-metadata <- read_csv("../data/Paleogene_crocs.csv")
+metadata <- read_csv("data/Paleogene_crocs.csv")
 
 # Trim to metadata
 metadata <- metadata[1:23, ]
@@ -73,23 +75,40 @@ metadata
 
 The metadata are strangely formatted here, but we can see that they include information about the data license (CC0), the API call used (under the label 'Data URL'), the date and time at which the data were accessed, and the total number of records contained within the dataset (here, 886 fossil occurrences).
 
-These metadata elements are all important information to retain alongside our data, allowing others to better understand what the dataset contains, and when and how it was downloaded. The Paleobiology Database is fully dynamic, not only in that new data is continually being added, but also in that any record can be changed retrospectively by an Editor. It cannot be assumed that the 'present' state of any data point was the same in the (historical) past. So, for example, if someone wanted to see how the data associated with this API call had changed in the time elapsed since our download, they could do this, and directly in R if desired:
+These metadata elements are all important information to retain alongside our data, allowing others to better understand what the dataset contains, and when and how it was downloaded. The Paleobiology Database is fully dynamic, not only in that new data is continually being added, but also in that any record can be changed retrospectively by an Editor. It cannot be assumed that the 'present' state of any data record was the same in the (historical) past. So, for example, if someone wanted to see how the data associated with this API call had changed in the time elapsed since our download, they could do this, and directly in R if desired:
 
-```{r API_call, eval = FALSE}
+```{r API_print}
 # View API URL
 metadata[5, 2]
+```
 
+```{r API_call, eval = FALSE}
 # Use API call (this is not enacted here)
-new_data <- read_csv(metadata[5, 2], header = TRUE)
+new_data <- read_csv(metadata[5, 2])
 ```
 
 While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the `skip` parameter in `read_csv`, which tells R to ignore a given number of rows at the top of the file.
 
-<!-- I spotted that we have two cc columns (cc and cc.1) which is making us have funky column names? -->
-
-```{r read_raw, message = FALSE}
+```{r read_raw}
 # Load data file, skipping metadata
-fossils <- read_csv("../data/Paleogene_crocs.csv", skip = 19)
+fossils <- read_csv("data/Paleogene_crocs.csv", skip = 19)
+```
+
+When we use `read_csv()`, we get a message explaining how the data have been parsed into R. It's worth checking this for anything unusual, because if parsing has not occurred how we expected, it could lead to errors in the data. Here, we can see that there were two columns in the `csv` file named "cc", for "country code". Their column number has been appended to their column name, in order to keep these distinct. Is this column simply duplicated? We can check this.
+
+```{r check_cc}
+# Are the two `cc` columns identical?
+identical(fossils$cc...36, fossils$cc...58)
+```
+
+This is true, so to keep our dataframe tidy, we will remove one of these columns and rename the other.
+
+```{r clean_cc}
+# Remove one `cc` column
+fossils$cc...58 <- NULL
+
+# Rename other column
+colnames(fossils)[colnames(fossils) == 'cc...36'] <- 'cc'
 ```
 
 And now we are ready to commence our data exploration and cleaning.
@@ -100,12 +119,9 @@ Documenting your workflow is essential for ensuring that others can understand a
 
 Our tips for good documentation in R include:
 
-<ul>
-  <li> Following general guidelines for good coding, such as ample use of spacing to help human readability </li>
-  <li> Having a clear, overarching code structure (such as subsections, which can be denoted with headings and "#====" notation, and an order which corresponds to the flow of the research methods/results) </li>
-  <li> Using logical yet short variable names </li>
-  <li> Including comments throughout which explain both *what* and *why* </li>
-</ul>
+- Following general guidelines for good coding, such as ample use of spacing to help human readability - Having a clear, overarching code structure (such as subsections, which can be denoted with headings and "#====" notation, and an order which corresponds to the flow of the research methods/results)
+- Using logical yet short variable names
+- Including comments throughout which explain both *what* and *why*
 
 ## Rule 4: Explore your data
 
@@ -140,8 +156,7 @@ coll_no_freq <- as.data.frame(table(fossils$collection_no))
 ggplot(coll_no_freq, aes(x = Freq)) +
   geom_histogram(stat = "count") +
   labs(x = "Number of occurrences",
-       y = "Frequency") +
-  theme()
+       y = "Frequency")
 ```
 
 We can see that the collection containing the most occurrences has 7, while the vast majority only contain a single occurrence.
@@ -150,16 +165,16 @@ What about the countries in which these fossils were found? We can investigate t
 
 ```{r countries}
 # List unique country codes, and count them
-unique(fossils$cc...36)
-length(unique(fossils$cc...36))
+unique(fossils$cc)
+length(unique(fossils$cc))
 ```
 
 Here we can see that Paleogene crocodiles have been found in 46 different countries. Let's sort those values alphabetically to help us find specific countries.
 
 ```{r countries_2}
 # List and sort unique country codes, and count them
-sort(unique(fossils$cc...36))
-length(sort(unique(fossils$cc...36)))
+sort(unique(fossils$cc))
+length(sort(unique(fossils$cc)))
 ```
 
 Something weird has happened here: we can see that once the countries have been sorted, one of them has disappeared. Why? We will come back to this during our next rule.
@@ -191,7 +206,8 @@ What can, or should, we do about this? It depends heavily on the intersection be
 Alternatively, it might be appropriate to filter these values out. For our crocodile example, we are interested in biogeography, so the latitude and longitude, and palaeolatitude and palaeolongitude, are pretty important. Do we have missing values there?
 
 ```{r missing_geo}
-# Count the number of occurrences for which `is.na()` is TRUE in latitude, longitude, palaeolatitude, and palaeolongitude
+# Count the number of occurrences for which `is.na()` is TRUE in latitude,
+# longitude, palaeolatitude, and palaeolongitude
 sum(is.na(fossils$lat))
 sum(is.na(fossils$lng))
 sum(is.na(fossils$paleolat))
@@ -215,7 +231,7 @@ Let's revisit our country example from Rule 5. Does our list of country codes co
 
 ```{r countries_3}
 # Count the number of country codes for which `is.na()` is TRUE
-sum(is.na(fossils$cc...36))
+sum(is.na(fossils$cc))
 ```
 
 Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation when any apparent errors arise in the dataset, rather than immediately removing these data points.
@@ -233,8 +249,7 @@ ggplot(fossils) +
   geom_sf(data = world) +
   geom_point(aes(x = lng, y = lat)) +
   labs(x = "Longitude (º)",
-       y = "Latitude (º)") +
-  coord_sf()
+       y = "Latitude (º)")
 ```
 
 We have a large density of crocodile occurrences in Europe and the western interior of the United States, along with a smattering of occurrences across the other continents. This distribution seems to fit our previous knowledge, that the occurrences are spread across 46 countries. However, the crocodile occurrences in Antarctica seem particularly suspicious: crocodiles need a warm climate, and modern-day Antarctica certainly doesn't fit this description. Let's investigate further. We'll do this by plotting the latitude of the occurrences through time.
@@ -244,7 +259,7 @@ We have a large density of crocodile occurrences in Europe and the western inter
 fossils <- mutate(fossils, mid_age = (min_ma + max_ma) / 2)
 
 # Create dataset containing only Antarctic fossils
-Antarctic <- filter(fossils, cc...36 == "AA")
+Antarctic <- filter(fossils, cc == "AA")
 
 # Plot the age of each occurrence against its latitude
 ggplot(fossils, aes(x = mid_age, y = lat)) +
@@ -311,7 +326,7 @@ ggplot(fossils, aes(x = bin_midpoint, y = paleolat, fill = interval_name)) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. At time of writing, the guidance for `geom_boxplot()` states that "The upper whisker extends from the hinge to the largest value no further than 1.5 * IQR from the hinge (where IQR is the inter-quartile range, or distance between the first and third quartiles). The lower whisker extends from the hinge to the smallest value at most 1.5 * IQR of the hinge. Data beyond the end of the whiskers are called "outlying" points and are plotted individually." 1.5 times the interquartile range seems a reasonable cut-off for determining outliers, so we will use these plots at face value to identify data points to check.
+Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. At time of writing, the guidance for `geom_boxplot()` states that "The upper whisker extends from the hinge to the largest value no further than 1.5 * IQR from the hinge (where IQR is the inter-quartile range, or distance between the first and third quartiles). The lower whisker extends from the hinge to the smallest value at most 1.5 * IQR of the hinge. Data beyond the end of the whiskers are called 'outlying' points and are plotted individually." 1.5 times the interquartile range seems a reasonable cut-off for determining outliers, so we will use these plots at face value to identify data points to check.
 
 Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a palaeogeographic map to investigate further.
 
@@ -335,7 +350,7 @@ Aha! There is a concentrated cluster of occurrences in the western interior of N
 ```{r lat_ypresian}
 # Remove US fossils from the Ypresian dataset
 fossils_y <- fossils_y %>%
-  filter(cc...36 != "US")
+  filter(cc != "US")
 
 # Plot histogram of Ypresian fossil palaeolatitudes
 ggplot(fossils_y) +
@@ -360,14 +375,15 @@ This looks reasonable. For example, we can see that our collection IDs are `nume
 
 Now let's dive in further to look for inconsistencies in spelling, which could cause taxonomic names or geological units to be grouped separately when they are really the same thing. We'll start by checking for potential taxonomic misspellings.
 
-We can use the table() function to look at the frequencies of various taxonomic names in the dataset. Here, inconsistencies like misspellings or antiquated taxonomic names might be recognized. We will check the columns `family`, `genus`, and `accepted_name`, the latter of which gives the name of the identification regardless of taxonomic level, and is the only column to give species binomials.
+We can use the table() function to look at the frequencies of various taxonomic names in the dataset. Here, inconsistencies like misspellings or antiquated taxonomic names might be recognised. We will check the columns `family`, `genus`, and `accepted_name`, the latter of which gives the name of the identification regardless of taxonomic level, and is the only column to give species binomials.
 
 ```{r count_names}
 # Tabulate the frequency of values in the "family" and "genus" columns
 table(fossils$family)
 table(fossils$genus)
 
-# Filter occurrences to those identified at species level, then tabulate species names
+# Filter occurrences to those identified at species level, then tabulate species
+# names
 fossils_sp <- filter(fossils, accepted_rank == "species")
 table(fossils_sp$accepted_name)
 ```
@@ -480,7 +496,8 @@ Next, we can look at geographic duplicates. We mentioned earlier that sometimes 
 # Remove duplicates based on geographic coordinates
 fossils_localities <- distinct(fossils, lng, lat, .keep_all = TRUE)
 
-# Compare length of vector of unique collection numbers with and without this filter
+# Compare length of vector of unique collection numbers with and without this
+# filter
 length(unique(fossils$collection_no))
 length(unique(fossils_localities$collection_no))
 ```
@@ -551,7 +568,7 @@ ggplot(lat_ranges, aes(x = midpoint, ymin = min, ymax = max)) +
 
 It is important to report the steps you took in cleaning and processing your data. When any code used to achieve this is presented alongside the manuscript, this is particularly easy, as any specific details which readers may be interested in can be checked within the code. As a result, the written description can be kept brief. An example outlining our workflow above is as follows:
 
-"We downloaded all fossil occurrence data for the taxon 'Crocodylia', dated to the time interval 'Paleogene' (66 - 23Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Taxonomic names and geographic coordinates were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
+"We downloaded all fossil occurrence data for the taxon 'Crocodylia', dated to the time interval 'Paleogene' (66--23Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Taxonomic names and geographic coordinates were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
 
 ## Rule 10: Deposit your data and workflow
 
