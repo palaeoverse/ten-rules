@@ -12,7 +12,7 @@
   <meta property="og:type" content="book" />
   
   
-  
+  <meta name="github-repo" content="palaeoverse/ten-rules" />
 
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Page not found | Ten simple rules to follow when cleaning occurrence data in palaeobiology" />
@@ -48,6 +48,7 @@
 
 
 
+<link href="libs/codefolding-lua-1.1/codefolding-lua.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
@@ -135,19 +136,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path=""><a href="#introduction"><i class="fa fa-check"></i><b>1</b> Introduction</a></li>
-<li class="chapter" data-level="2" data-path=""><a href="#load-packages"><i class="fa fa-check"></i><b>2</b> Load packages</a></li>
-<li class="chapter" data-level="3" data-path=""><a href="#rule-1-choose-the-right-data-for-your-question"><i class="fa fa-check"></i><b>3</b> Rule 1: Choose the right data for your question</a></li>
-<li class="chapter" data-level="4" data-path=""><a href="#rule-2-keep-raw-data-raw"><i class="fa fa-check"></i><b>4</b> Rule 2: Keep raw data raw</a></li>
-<li class="chapter" data-level="5" data-path=""><a href="#rule-3-document-your-workflow"><i class="fa fa-check"></i><b>5</b> Rule 3: Document your workflow</a></li>
-<li class="chapter" data-level="6" data-path=""><a href="#rule-4-explore-your-data"><i class="fa fa-check"></i><b>6</b> Rule 4: Explore your data</a></li>
-<li class="chapter" data-level="7" data-path=""><a href="#rule-5-handle-incomplete-data-records"><i class="fa fa-check"></i><b>7</b> Rule 5: Handle incomplete data records</a></li>
-<li class="chapter" data-level="8" data-path=""><a href="#rule-6-identify-outliers"><i class="fa fa-check"></i><b>8</b> Rule 6: Identify outliers</a></li>
-<li class="chapter" data-level="9" data-path=""><a href="#rule-7-identify-inconsistencies"><i class="fa fa-check"></i><b>9</b> Rule 7: Identify inconsistencies</a></li>
-<li class="chapter" data-level="10" data-path=""><a href="#rule-8-identify-duplicates"><i class="fa fa-check"></i><b>10</b> Rule 8: Identify duplicates</a></li>
-<li class="chapter" data-level="11" data-path=""><a href="#rule-9-report-your-data-and-cleaning-efforts"><i class="fa fa-check"></i><b>11</b> Rule 9: Report your data and cleaning efforts</a></li>
-<li class="chapter" data-level="12" data-path=""><a href="#rule-10-deposit-your-data-and-workflow"><i class="fa fa-check"></i><b>12</b> Rule 10: Deposit your data and workflow</a></li>
-<li class="chapter" data-level="13" data-path=""><a href="#summary"><i class="fa fa-check"></i><b>13</b> Summary</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#introduction"><i class="fa fa-check"></i>Introduction</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#load-packages"><i class="fa fa-check"></i>Load packages</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-1-choose-the-right-data-for-your-question"><i class="fa fa-check"></i>Rule 1: Choose the right data for your question</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-2-keep-raw-data-raw"><i class="fa fa-check"></i>Rule 2: Keep raw data raw</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-3-document-your-workflow"><i class="fa fa-check"></i>Rule 3: Document your workflow</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-4-explore-your-data"><i class="fa fa-check"></i>Rule 4: Explore your data</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-5-identify-and-handle-incomplete-data-records"><i class="fa fa-check"></i>Rule 5: Identify and handle incomplete data records</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-6-identify-and-handle-outliers"><i class="fa fa-check"></i>Rule 6: Identify and handle outliers</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-7-identify-and-handle-inconsistencies"><i class="fa fa-check"></i>Rule 7: Identify and handle inconsistencies</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-8-identify-and-handle-duplicates"><i class="fa fa-check"></i>Rule 8: Identify and handle duplicates</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-9-report-your-data-and-cleaning-efforts"><i class="fa fa-check"></i>Rule 9: Report your data and cleaning efforts</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#rule-10-deposit-your-data-and-workflow"><i class="fa fa-check"></i>Rule 10: Deposit your data and workflow</a></li>
+<li class="chapter" data-level="" data-path=""><a href="#summary"><i class="fa fa-check"></i>Summary</a></li>
+<li class="divider"></li>
+<li><a href="https://palaeoverse.org/">
+Palaeoverse Website</a></li>
+
 </ul>
 
       </nav>
@@ -192,9 +197,9 @@ the table of contents to find the page you are looking for.</p>
 gitbook.require(["gitbook"], function(gitbook) {
 gitbook.start({
 "sharing": {
-"github": false,
-"facebook": true,
-"twitter": true,
+"github": true,
+"facebook": false,
+"twitter": false,
 "linkedin": false,
 "weibo": false,
 "instapaper": false,
@@ -219,7 +224,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": null,
+"download": ["vignette.pdf", "vignette.Rmd"],
 "search": false,
 "toc": {
 "collapse": "subsection"

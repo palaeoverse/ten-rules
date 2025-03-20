@@ -1,6 +1,7 @@
 ---
 title: "Ten simple rules to follow when cleaning occurrence data in palaeobiology"
 author: "The Palaeoverse Development Team"
+url: 'https\://tenrules.palaeoverse.org/'
 output: 
   bookdown::pdf_book:
     number_sections: FALSE
@@ -10,6 +11,15 @@ output:
     global_numbering: FALSE
     config:
       download: ["vignette.pdf", "vignette.Rmd"]
+      sharing:
+        twitter: false
+        facebook: false
+        github: true
+      toc:
+        after: |
+          <li><a href="https://palaeoverse.org/">
+          Palaeoverse Website</a></li>
+github-repo: "palaeoverse/ten-rules"
 editor_options: 
   chunk_output_type: console
 colorlinks: yes
