@@ -17,9 +17,11 @@ output:
         github: true
       toc:
         after: |
-          <li><a href="https://palaeoverse.org/">
-          Palaeoverse Website</a></li>
+          <li><a href="https://palaeoverse.org/" target="_blank"><img src="img/logo.png" height="50px"></a></li>
 github-repo: "palaeoverse/ten-rules"
+cover-image: "img/logo_circle.png"
+apple-touch-icon: "img/apple-touch-icon.png"
+favicon: "img/favicon.ico"
 editor_options: 
   chunk_output_type: console
 colorlinks: yes
