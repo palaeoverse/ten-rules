@@ -50,7 +50,7 @@ library(rnaturalearthdata)
 
 In this example, we are interested in the fossil record of crocodiles. As ectotherms, crocodiles are highly reliant on the environment in which they live in order to maintain a functional internal body temperature. Because of this, their spatial distribution is constrained to warm climates, so their fossil record is commonly used as an indicator of palaeoclimate. Here we will investigate the palaeodiversity of crocodiles, with the specific goal of reconstructing their latitudinal range throughout the Paleogene.
 
-To meet this goal, we need to acquire occurrence data for fossil crocodiles throughout the Paleogene. Initially we have decided not to place further taxonomic constraints on our search, so we will include all occurrences belonging to the order 'Crocodylia'. We are interested in the clade's biogeography, so we will need all occurrences globally, and we need to ensure that we have geographic coordinates associated with our occurrences.
+To meet this goal, we need to acquire occurrence data for fossil crocodiles during the Paleogene. Initially we have decided not to place further taxonomic constraints on our search, so we will include all occurrences belonging to the order 'Crocodylia'. We are interested in the clade's biogeography, so we will need all occurrences globally, and we need to ensure that we have geographic coordinates associated with our occurrences.
 
 We will turn to one of the largest sources of fossil occurrence data, the [Paleobiology Database](https://paleobiodb.org). We opted to download our data by completing the 'Download' form on the Paleobiology Database website. Practically, this uses the options entered into the form to create a call to the database's API (application programming interface), and then enacts this call. More information about the API service can be found [here](https://paleobiodb.org/data1.2/).
 
@@ -288,7 +288,7 @@ ggplot(fossils, aes(x = mid_age, y = paleolat)) +
   coord_geo(dat = "stages", expand = TRUE)
 ```
 
-Hmm... when we look at palaeolatitude the occurrences are even **further** south. Time to really check out these occurrences. Which collections are they within?
+Hmm... when we look at palaeolatitude the Antarctic occurrences are even **further** south. Time to really check out these occurrences. Which collections are they within?
 
 ```{r antarctic_colls}
 # Find Antarctic collection numbers
@@ -341,8 +341,7 @@ ggplot(fossils_y) +
   geom_sf(data = world_y) +
   geom_point(aes(x = paleolng, y = paleolat)) +
   labs(x = "Palaeolongitude (º)",
-       y = "Palaeolatitude (º)") +
-  coord_sf()
+       y = "Palaeolatitude (º)")
 ```
 
 Aha! There is a concentrated cluster of occurrences in the western interior of North America. This high number of occurrences is increasing the weight of data at this palaeolatitude, and narrowing the boundaries at which other points are considered outliers. We can check the effect this is having on our outlier identification by removing the US occurrences from the dataset and checking the distribution again.
@@ -412,7 +411,7 @@ check_taxonomy(as.data.frame(fossils), ranks = fossil_ranks)
 
 As before, no major inconsistencies or potential spelling errors were flagged.
 
-The Paleobiology Database has an integrated taxonomy system which limits the extent to which taxon name inconsistencies can arise. However, this is not the case for some other data fields. Let's check the formation names for our occurrences. This could be important if, for example, we wanted to include information about the number of formations from which our fossils are taken within the manuscript - a misspelling could inflate our count.
+The PBDB has an integrated taxonomy system which limits the extent to which taxon name inconsistencies can arise. However, this is not the case for some other data fields. Let's check the formation names for our occurrences. This could be important if, for example, we wanted to include information about the number of formations from which our fossils are taken within the manuscript - a misspelling could inflate our count.
 
 ```{r check_formations}
 # Tabulating the frequency of each formation
@@ -473,7 +472,7 @@ Overall, our dataset looks to be in good shape!
 
 ## Rule 8: Identify duplicates
 
-Our next step is to remove duplicates. This is also an important step for count data, as duplicated values will artificially inflate our counts. Here, the function `dplyr::distinct()` is incredibly useful, as we can provide it with the columns we want it to check, and it removes rows for which data within those columns is identical.
+Our next step is to remove duplicates. This is an important step for count data, as duplicated values will artificially inflate our counts. Here, the function `dplyr::distinct()` is incredibly useful, as we can provide it with the columns we want it to check, and it removes rows for which data within those columns is identical.
 
 First, we will remove *absolute* duplicates: by this, we mean occurrences within a single collection which have identical taxonomic names. This can occur when, for example, two species are named within a collection, one of which is later synonymised with the other.
 
@@ -529,7 +528,7 @@ fossils_sp <- filter(fossils_sp, duplicate_flag == TRUE)
 fossils_sp <- arrange(fossils_sp, accepted_name)
 ```
 
-We recommend iteratively enacting Rules 4 to 7, because if data are altered or filtered at any point, this can change the overall summary statisitcs, and affect how we perceive the data. Once you are happy with your dataset, it is time to perform any analytical processes relating to your research question - in our simple example, this is quantifying the latitudinal distribution of our occurrences over time.
+We recommend iteratively enacting Rules 4 to 7, because if data are altered or filtered at any point, this can change the overall summary statistics, and affect how we perceive the data. Once you are happy with your dataset, it is time to perform any analytical processes relating to your research question - in our simple example, this is quantifying the latitudinal distribution of our occurrences over time.
 
 ```{r final_plot}
 # List geological stages in dataset
@@ -588,8 +587,10 @@ ref_url <- paste("https://paleobiodb.org/data1.2/refs/list.csv?ref_id=",
 # Use API call (this is not enacted here)
 ref_table <- read_csv(ref_url)
 # Save table of references for supplement
-write_csv(ref_table, "data/data_references.csv", row.names = F)
+write_csv(ref_table, "data/data_references.csv")
 ```
+
+Depending on the preferences of our journal, we can then add these to our reference list, or provide the table as part of the paper's data supplement.
 
 ## Rule 10: Deposit your data and workflow
 
