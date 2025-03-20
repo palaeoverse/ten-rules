@@ -2,13 +2,16 @@
 title: "Ten simple rules to follow when cleaning occurrence data in palaeobiology"
 author: "The Palaeoverse Development Team"
 output: 
-  pdf_document: default
-  html_document:
-    toc: true
-    toc_float: true
+  bookdown::pdf_book:
+    number_sections: FALSE
+  bookdown::gitbook:
     code_folding: show
+    number_sections: FALSE
+    global_numbering: FALSE
 editor_options: 
   chunk_output_type: console
+colorlinks: yes
+urlcolor: blue
 ---
 
 ```{r setup, include = FALSE}
@@ -148,13 +151,13 @@ length(unique(fossils$collection_no))
 
 Our dataset contains 720 unique collections. We can also create a plot showing us the distribution of occurrences across these collections.
 
-```{r abundance_distribution, message = FALSE}
+```{r abundance_distribution}
 # Count the number of times each collection number appears in the dataset
 coll_no_freq <- as.data.frame(table(fossils$collection_no))
 
 # Plot the distribution of number of occurrences per collection
 ggplot(coll_no_freq, aes(x = Freq)) +
-  geom_histogram(stat = "count") +
+  geom_bar() +
   labs(x = "Number of occurrences",
        y = "Frequency")
 ```
@@ -179,7 +182,7 @@ length(sort(unique(fossils$cc)))
 
 Something weird has happened here: we can see that once the countries have been sorted, one of them has disappeared. Why? We will come back to this during our next rule.
 
-## Rule 5: Handle incomplete data records
+## Rule 5: Identify and handle incomplete data records
 
 By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as `read.csv()`, empty cells are given an `NA` value ('not available') only when the column is considered to contain numerical data. When we use `Tidyverse` functions, such as `readr::read_csv()`, *all* empty cells are given `NA` values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are `NA`.
 
@@ -236,7 +239,7 @@ sum(is.na(fossils$cc))
 
 Our test tells us that two of the values are `NA`: when we asked R to sort the values, it removed `NA` from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don't: these values are not `NA`, they are "NA" meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation when any apparent errors arise in the dataset, rather than immediately removing these data points.
 
-## Rule 6: Identify outliers
+## Rule 6: Identify and handle outliers
 
 Next, we want to look for outliers. Here we will focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we'll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?
 
@@ -328,7 +331,7 @@ ggplot(fossils, aes(x = bin_midpoint, y = paleolat, fill = interval_name)) +
 
 Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. At time of writing, the guidance for `geom_boxplot()` states that "The upper whisker extends from the hinge to the largest value no further than 1.5 * IQR from the hinge (where IQR is the inter-quartile range, or distance between the first and third quartiles). The lower whisker extends from the hinge to the smallest value at most 1.5 * IQR of the hinge. Data beyond the end of the whiskers are called 'outlying' points and are plotted individually." 1.5 times the interquartile range seems a reasonable cut-off for determining outliers, so we will use these plots at face value to identify data points to check.
 
-Here, the Ypresian is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a palaeogeographic map to investigate further.
+Here, the Ypresian ("Y") is looking pretty suspicious - it seems to have a lot of outliers. Let's plot the Ypresian occurrences on a palaeogeographic map to investigate further.
 
 ```{r map_ypresian}
 # Load map of the Ypresian, and identify Ypresian fossils
@@ -351,17 +354,18 @@ Aha! There is a concentrated cluster of occurrences in the western interior of N
 fossils_y <- fossils_y %>%
   filter(cc != "US")
 
-# Plot histogram of Ypresian fossil palaeolatitudes
+# Plot boxplot of non-US Ypresian fossil palaeolatitudes
 ggplot(fossils_y) +
   geom_boxplot(aes(y = paleolat)) +
-  labs(x = "Palaeolatitude (º)")
+  labs(y = "Palaeolatitude (º)") +
+  scale_x_continuous(breaks = NULL)
 ```
 
 We can now see that none of our occurrences are being flagged as outliers. Without this strong geographic bias towards the US, all of the occurrences in the Ypresian appear to be reasonable. This fits our prior knowledge, as [elevated global temperatures during this time](https://doi.org/10.1038/s41586-018-0272-2) likely helped crocodiles to live at higher latitudes than was possible earlier in the Paleogene.
 
 So to sum up, it seems that our outliers are not concerning, so we will leave them in our dataset and continue with our analytical pipeline.
 
-## Rule 7: Identify inconsistencies
+## Rule 7: Identify and handle inconsistencies
 
 We're now going to look for inconsistencies in our dataset. Let's start by revisiting its structure, focusing on whether the class types of the variables make sense.
 
@@ -470,7 +474,7 @@ coord_check <- cf_equal(coord_check, min_age = "min_ma", max_age = "max_ma")
 
 Overall, our dataset looks to be in good shape!
 
-## Rule 8: Identify duplicates
+## Rule 8: Identify and handle duplicates
 
 Our next step is to remove duplicates. This is an important step for count data, as duplicated values will artificially inflate our counts. Here, the function `dplyr::distinct()` is incredibly useful, as we can provide it with the columns we want it to check, and it removes rows for which data within those columns is identical.
 
