@@ -21,7 +21,8 @@ urlcolor: blue
 ## Introduction
 
 This vignette is an accompaniment to:
-Jones LA, Dean CD, Allen BJ, Drage HB, Flannery-Sutherland JT, Chiarenza AA, Dillon EM, Farina BM, Gearty W, Godoy PL. Ten simple rules to follow when cleaning occurence data in palaeobiology.
+
+> Jones LA, Dean CD, Allen BJ, Drage HB, Flannery-Sutherland JT, Gearty W, Chiarenza AA, Dillon EM, Farina BM, and Godoy PL. Ten simple rules to follow when cleaning occurrence data in palaeobiology.
 
 Here we present a full example workflow that complies with the ten rules we propose in the manuscript. The intention is to illustrate the concepts outlined in the manuscript, with further details and ideas for practical implementation, as well as code that can be repurposed by readers.
 
