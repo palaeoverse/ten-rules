@@ -26,13 +26,14 @@ editor_options:
   chunk_output_type: console
 colorlinks: yes
 urlcolor: blue
-knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, output_format = "bookdown::gitbook", encoding = encoding, output_file = file.path(dirname(inputFile), 'index.html')) })
+#knit: (function(inputFile, encoding) { rmarkdown::render(inputFile, output_format = "bookdown::gitbook", encoding = encoding, output_file = file.path(dirname(inputFile), 'index.html')) })
 ---
 
 ```{r setup, include = FALSE}
 library(formatR)
 knitr::opts_knit$set(root.dir = '..')
 knitr::opts_chunk$set(echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
+                      warning = FALSE,
                       out.width = "100%", fig.width = 7.2, fig.height = 4,
                       tidy.opts = list(width.cutoff = 78))
 ```
@@ -139,7 +140,8 @@ Documenting your workflow is essential for ensuring that others can understand a
 
 Our tips for good documentation in R include:
 
-- Following general guidelines for good coding, such as ample use of spacing to help human readability - Having a clear, overarching code structure (such as subsections, which can be denoted with headings and "#====" notation, and an order which corresponds to the flow of the research methods/results)
+- Following general guidelines for good coding, such as ample use of spacing to help human readability 
+- Having a clear, overarching code structure (such as subsections, which can be denoted with headings and "#====" notation, and an order which corresponds to the flow of the research methods/results)
 - Using logical yet short variable names
 - Including comments throughout which explain both *what* and *why*
 
@@ -276,13 +278,13 @@ We have a large density of crocodile occurrences in Europe and the western inter
 
 ```{r lat_time}
 # Add a column to the data frame with the midpoint of the fossil ages
-fossils <- mutate(fossils, mid_age = (min_ma + max_ma) / 2)
+fossils <- mutate(fossils, mid_ma = (min_ma + max_ma) / 2)
 
 # Create dataset containing only Antarctic fossils
 Antarctic <- filter(fossils, cc == "AA")
 
 # Plot the age of each occurrence against its latitude
-ggplot(fossils, aes(x = mid_age, y = lat)) +
+ggplot(fossils, aes(x = mid_ma, y = lat)) +
   geom_point(colour = "black") +
   geom_point(data = Antarctic, colour = "red") +
   labs(x = "Age (Ma)",
@@ -298,7 +300,7 @@ But, wait, we should actually be looking at **palaeo**latitude instead. Let's pl
 
 ```{r palaeolat_time}
 # Plot the age of each occurrence against its palaeolatitude
-ggplot(fossils, aes(x = mid_age, y = paleolat)) +
+ggplot(fossils, aes(x = mid_ma, y = paleolat)) +
   geom_point(colour = "black") +
   geom_point(data = Antarctic, colour = "red") +
   labs(x = "Age (Ma)",
@@ -588,7 +590,7 @@ ggplot(lat_ranges, aes(x = midpoint, ymin = min, ymax = max)) +
 
 It is important to report the steps you took in cleaning and processing your data. When any code used to achieve this is presented alongside the manuscript, this is particularly easy, as any specific details which readers may be interested in can be checked within the code. As a result, the written description can be kept brief. An example outlining our workflow above is as follows:
 
-"We downloaded all fossil occurrence data for the taxon 'Crocodylia', dated to the time interval 'Paleogene' (66--23Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Taxonomic names and geographic coordinates were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
+"We downloaded all fossil occurrence data for the taxon 'Crocodylia', dated to the time interval 'Paleogene' (66--23 Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Taxonomic names and geographic coordinates were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations."
 
 We can also create a reference list containing all of the sources for the occurrences in our dataset.
 

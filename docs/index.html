@@ -213,18 +213,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We can load and view the metadata to see what it includes.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Load data file</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/Paleogene_crocs.csv&quot;</span>)</span></code></pre></div>
-</details>
-<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
-## e.g.:
-##   dat &lt;- vroom(...)
-##   problems(dat)</code></pre>
-<details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Trim to metadata</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> metadata[<span class="dv">1</span><span class="sc">:</span><span class="dv">23</span>, ]</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co"># Print</span></span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>metadata</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/Paleogene_crocs.csv&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co"># Trim to metadata</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> metadata[<span class="dv">1</span><span class="sc">:</span><span class="dv">23</span>, ]</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co"># Print</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>metadata</span></code></pre></div>
 </details>
 <pre><code>## # A tibble: 23 × 2
 ##    `Data Provider`   `The Paleobiology Database`                                
@@ -243,21 +238,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The metadata are strangely formatted here, but we can see that they include information about the data license (CC0), the API call used (under the label ‘Data URL’), the date and time at which the data were accessed, and the total number of records contained within the dataset (here, 886 fossil occurrences).</p>
 <p>These metadata elements are all important information to retain alongside our data, allowing others to better understand what the dataset contains, and when and how it was downloaded. The Paleobiology Database is fully dynamic, not only in that new data is continually being added, but also in that any record can be changed retrospectively by an Editor. It cannot be assumed that the ‘present’ state of any data record was the same in the (historical) past. So, for example, if someone wanted to see how the data associated with this API call had changed in the time elapsed since our download, they could do this, and directly in R if desired:</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># View API URL</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>metadata[<span class="dv">5</span>, <span class="dv">2</span>]</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># View API URL</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>metadata[<span class="dv">5</span>, <span class="dv">2</span>]</span></code></pre></div>
 </details>
 <pre><code>## # A tibble: 1 × 1
 ##   `The Paleobiology Database`                                                   
 ##   &lt;chr&gt;                                                                         
 ## 1 http://paleobiodb.org/data1.2/occs/list.csv?datainfo&amp;rowcount&amp;base_name=Croco…</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Use API call (this is not enacted here)</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(metadata[<span class="dv">5</span>, <span class="dv">2</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Use API call (this is not enacted here)</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>new_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(metadata[<span class="dv">5</span>, <span class="dv">2</span>])</span></code></pre></div>
 </details>
 <p>While the metadata is important to keep in the raw file, for the purposes of analysis, we want to be able to just read in the data beneath it. We can do this using the <code>skip</code> parameter in <code>read_csv</code>, which tells R to ignore a given number of rows at the top of the file.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Load data file, skipping metadata</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/Paleogene_crocs.csv&quot;</span>, <span class="at">skip =</span> <span class="dv">19</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Load data file, skipping metadata</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/Paleogene_crocs.csv&quot;</span>, <span class="at">skip =</span> <span class="dv">19</span>)</span></code></pre></div>
 </details>
 <pre><code>## New names:
 ## Rows: 886 Columns: 131
@@ -272,17 +267,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## • `cc` -&gt; `cc...58`</code></pre>
 <p>When we use <code>read_csv()</code>, we get a message explaining how the data have been parsed into R. It’s worth checking this for anything unusual, because if parsing has not occurred how we expected, it could lead to errors in the data. Here, we can see that there were two columns in the <code>csv</code> file named “cc”, for “country code”. Their column number has been appended to their column name, in order to keep these distinct. Is this column simply duplicated? We can check this.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Are the two `cc` columns identical?</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">identical</span>(fossils<span class="sc">$</span>cc...<span class="dv">36</span>, fossils<span class="sc">$</span>cc...<span class="dv">58</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Are the two `cc` columns identical?</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">identical</span>(fossils<span class="sc">$</span>cc...<span class="dv">36</span>, fossils<span class="sc">$</span>cc...<span class="dv">58</span>)</span></code></pre></div>
 </details>
 <pre><code>## [1] TRUE</code></pre>
 <p>This is true, so to keep our dataframe tidy, we will remove one of these columns and rename the other.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Remove one `cc` column</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>fossils<span class="sc">$</span>cc...<span class="dv">58</span> <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co"># Rename other column</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="fu">colnames</span>(fossils)[<span class="fu">colnames</span>(fossils) <span class="sc">==</span> <span class="st">&#39;cc...36&#39;</span>] <span class="ot">&lt;-</span> <span class="st">&#39;cc&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Remove one `cc` column</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>fossils<span class="sc">$</span>cc...<span class="dv">58</span> <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co"># Rename other column</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="fu">colnames</span>(fossils)[<span class="fu">colnames</span>(fossils) <span class="sc">==</span> <span class="st">&#39;cc...36&#39;</span>] <span class="ot">&lt;-</span> <span class="st">&#39;cc&#39;</span></span></code></pre></div>
 </details>
 <p>And now we are ready to commence our data exploration and cleaning.</p>
 </div>
@@ -291,7 +286,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Documenting your workflow is essential for ensuring that others can understand and replicate all steps. Using programming languages such as R or Python makes this easy, as the code used can be provided alongside the data. Our vignette gives an example of how <code>markdown</code> can be a particularly useful tool for integrating code with prose, ensuring that everything is fully explained, and providing plots integrated within the text when exported.</p>
 <p>Our tips for good documentation in R include:</p>
 <ul>
-<li>Following general guidelines for good coding, such as ample use of spacing to help human readability - Having a clear, overarching code structure (such as subsections, which can be denoted with headings and “#====” notation, and an order which corresponds to the flow of the research methods/results)</li>
+<li>Following general guidelines for good coding, such as ample use of spacing to help human readability</li>
+<li>Having a clear, overarching code structure (such as subsections, which can be denoted with headings and “#====” notation, and an order which corresponds to the flow of the research methods/results)</li>
 <li>Using logical yet short variable names</li>
 <li>Including comments throughout which explain both <em>what</em> and <em>why</em></li>
 </ul>
@@ -301,8 +297,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The first thing we want to do with our data is <em>explore</em> it - that is, generate summary statistics and plots to help us understand the data and its various characteristics.</p>
 <p>For example, we can look at the distribution of identification levels for our fossils.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Count the frequency of taxonomic ranks</span></span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>accepted_rank)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Count the frequency of taxonomic ranks</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>accepted_rank)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##         family          genus        species      subfamily    superfamily 
@@ -310,8 +306,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## unranked clade 
 ##            365</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># Calculate as percentages</span></span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>(<span class="fu">table</span>(fossils<span class="sc">$</span>accepted_rank) <span class="sc">/</span> <span class="fu">nrow</span>(fossils)) <span class="sc">*</span> <span class="dv">100</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># Calculate as percentages</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>(<span class="fu">table</span>(fossils<span class="sc">$</span>accepted_rank) <span class="sc">/</span> <span class="fu">nrow</span>(fossils)) <span class="sc">*</span> <span class="dv">100</span></span></code></pre></div>
 </details>
 <pre><code>## 
 ##         family          genus        species      subfamily    superfamily 
@@ -321,46 +317,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>We can see that of our 886 occurrences, 250 (28%) are identified to species level. A further 254 (29%) are identified to genus level. The remaining fossils are more coarsely identified, including 365 (41%) which are identified to the mysterious level of “unranked clade”.</p>
 <p>Next, let’s look at the distribution of fossils across localities. In the PBDB, fossils are placed within collections, each of which can roughly be considered a separate locality (they can also represent different sampling horizons at the same locality; more on this later). First, we can count the number of unique <code>collection_no</code> values to find out how many unique collections are in the dataset.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># What is the length of a vector of unique collection numbers?</span></span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>collection_no))</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># What is the length of a vector of unique collection numbers?</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>collection_no))</span></code></pre></div>
 </details>
 <pre><code>## [1] 720</code></pre>
 <p>Our dataset contains 720 unique collections. We can also create a plot showing us the distribution of occurrences across these collections.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Count the number of times each collection number appears in the dataset</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>coll_no_freq <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">table</span>(fossils<span class="sc">$</span>collection_no))</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co"># Plot the distribution of number of occurrences per collection</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="fu">ggplot</span>(coll_no_freq, <span class="fu">aes</span>(<span class="at">x =</span> Freq)) <span class="sc">+</span></span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Number of occurrences&quot;</span>,</span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># Count the number of times each collection number appears in the dataset</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>coll_no_freq <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">table</span>(fossils<span class="sc">$</span>collection_no))</span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="co"># Plot the distribution of number of occurrences per collection</span></span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a><span class="fu">ggplot</span>(coll_no_freq, <span class="fu">aes</span>(<span class="at">x =</span> Freq)) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>  <span class="fu">geom_bar</span>() <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Number of occurrences&quot;</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/abundance_distribution-1.png" width="100%" /></p>
 <p>We can see that the collection containing the most occurrences has 7, while the vast majority only contain a single occurrence.</p>
 <p>What about the countries in which these fossils were found? We can investigate this using the “cc”, or “country code” column.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># List unique country codes, and count them</span></span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">unique</span>(fossils<span class="sc">$</span>cc)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># List unique country codes, and count them</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a><span class="fu">unique</span>(fossils<span class="sc">$</span>cc)</span></code></pre></div>
 </details>
 <pre><code>##  [1] &quot;US&quot; &quot;CA&quot; &quot;PE&quot; &quot;IN&quot; &quot;FR&quot; &quot;MA&quot; &quot;BE&quot; &quot;RU&quot; &quot;AR&quot; &quot;ES&quot; &quot;UK&quot; &quot;DE&quot; &quot;KZ&quot; &quot;LY&quot; &quot;IT&quot;
 ## [16] &quot;BR&quot; &quot;AU&quot; &quot;PK&quot; &quot;JM&quot; &quot;EG&quot; &quot;AA&quot; &quot;TR&quot; &quot;CZ&quot; &quot;MG&quot; &quot;CN&quot; &quot;DK&quot; &quot;SE&quot; &quot;UA&quot; &quot;PL&quot; &quot;PR&quot;
 ## [31] &quot;TH&quot; &quot;TN&quot; &quot;VN&quot; &quot;KE&quot; &quot;AT&quot; &quot;OM&quot; &quot;PT&quot; NA   &quot;CH&quot; &quot;EH&quot; &quot;ML&quot; &quot;RO&quot; &quot;NP&quot; &quot;MN&quot; &quot;BG&quot;
 ## [46] &quot;CO&quot;</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>cc))</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>cc))</span></code></pre></div>
 </details>
 <pre><code>## [1] 46</code></pre>
 <p>Here we can see that Paleogene crocodiles have been found in 46 different countries. Let’s sort those values alphabetically to help us find specific countries.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># List and sort unique country codes, and count them</span></span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>cc))</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="co"># List and sort unique country codes, and count them</span></span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a><span class="fu">sort</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>cc))</span></code></pre></div>
 </details>
 <pre><code>##  [1] &quot;AA&quot; &quot;AR&quot; &quot;AT&quot; &quot;AU&quot; &quot;BE&quot; &quot;BG&quot; &quot;BR&quot; &quot;CA&quot; &quot;CH&quot; &quot;CN&quot; &quot;CO&quot; &quot;CZ&quot; &quot;DE&quot; &quot;DK&quot; &quot;EG&quot;
 ## [16] &quot;EH&quot; &quot;ES&quot; &quot;FR&quot; &quot;IN&quot; &quot;IT&quot; &quot;JM&quot; &quot;KE&quot; &quot;KZ&quot; &quot;LY&quot; &quot;MA&quot; &quot;MG&quot; &quot;ML&quot; &quot;MN&quot; &quot;NP&quot; &quot;OM&quot;
 ## [31] &quot;PE&quot; &quot;PK&quot; &quot;PL&quot; &quot;PR&quot; &quot;PT&quot; &quot;RO&quot; &quot;RU&quot; &quot;SE&quot; &quot;TH&quot; &quot;TN&quot; &quot;TR&quot; &quot;UA&quot; &quot;UK&quot; &quot;US&quot; &quot;VN&quot;</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>cc)))</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">sort</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>cc)))</span></code></pre></div>
 </details>
 <pre><code>## [1] 45</code></pre>
 <p>Something weird has happened here: we can see that once the countries have been sorted, one of them has disappeared. Why? We will come back to this during our next rule.</p>
@@ -370,56 +366,56 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>By default, when we read data tables into R, it recognises empty cells and takes some course of action to manage them. When we use base R functions, such as <code>read.csv()</code>, empty cells are given an <code>NA</code> value (‘not available’) only when the column is considered to contain numerical data. When we use <code>Tidyverse</code> functions, such as <code>readr::read_csv()</code>, <em>all</em> empty cells are given <code>NA</code> values. This is important to bear in mind when we want to find those missing values: here, we have done the latter, so all empty cells are <code>NA</code>.</p>
 <p>The extent of incompleteness of the different columns in our dataset is highly variable. For example, the number of <code>NA</code> values for the <code>collection_no</code> is 0.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co"># Count the number of collection number values for which `is.na()` is TRUE</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>collection_no))</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="co"># Count the number of collection number values for which `is.na()` is TRUE</span></span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>collection_no))</span></code></pre></div>
 </details>
 <pre><code>## [1] 0</code></pre>
 <p>This is because it is impossible to add an occurrence to the PBDB without putting it in a collection, which must in turn have an identification number.</p>
 <p>However, what about <code>genus</code>?</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co"># Count the number of genus IDs for which `is.na()` is TRUE</span></span>
-<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>genus))</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co"># Count the number of genus IDs for which `is.na()` is TRUE</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>genus))</span></code></pre></div>
 </details>
 <pre><code>## [1] 382</code></pre>
 <p>The value here is 382. This corresponds to the number of occurrences in our dataset which cannot be placed in a genus, i.e. their taxonomic identification is to a coarser taxonomic level.</p>
 <p>What can, or should, we do about this? It depends heavily on the intersection between the different fields in the dataset, and our research question. In some instances it might be appropriate to ignore certain <code>NA</code> values: for example, <code>NA</code> values for <code>genus</code> might not matter if we want to see the spatial distribution of all crocodylian fossils, regardless of how coarsely identified they are.</p>
 <p>Alternatively, it might be appropriate to filter these values out. For our crocodile example, we are interested in biogeography, so the latitude and longitude, and palaeolatitude and palaeolongitude, are pretty important. Do we have missing values there?</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="co"># Count the number of occurrences for which `is.na()` is TRUE in latitude,</span></span>
-<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a><span class="co"># longitude, palaeolatitude, and palaeolongitude</span></span>
-<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>lat))</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="co"># Count the number of occurrences for which `is.na()` is TRUE in latitude,</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="co"># longitude, palaeolatitude, and palaeolongitude</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>lat))</span></code></pre></div>
 </details>
 <pre><code>## [1] 0</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>lng))</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>lng))</span></code></pre></div>
 </details>
 <pre><code>## [1] 0</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolat))</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolat))</span></code></pre></div>
 </details>
 <pre><code>## [1] 18</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolng))</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolng))</span></code></pre></div>
 </details>
 <pre><code>## [1] 18</code></pre>
 <p>While all occurrences have modern day coordinates, 18 are missing palaeocoordinates. We will now remove these 18 occurrences from the dataset.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="co"># Remove occurrences which are missing palaeocoordinates</span></span>
-<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, <span class="sc">!</span><span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolng))</span>
-<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a></span>
-<span id="cb41-4"><a href="#cb41-4" tabindex="-1"></a><span class="co"># Check whether this has worked</span></span>
-<span id="cb41-5"><a href="#cb41-5" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolat))</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="co"># Remove occurrences which are missing palaeocoordinates</span></span>
+<span id="cb39-2"><a href="#cb39-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, <span class="sc">!</span><span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolng))</span>
+<span id="cb39-3"><a href="#cb39-3" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" tabindex="-1"></a><span class="co"># Check whether this has worked</span></span>
+<span id="cb39-5"><a href="#cb39-5" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolat))</span></code></pre></div>
 </details>
 <pre><code>## [1] 0</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolng))</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>paleolng))</span></code></pre></div>
 </details>
 <pre><code>## [1] 0</code></pre>
 <p>A further option applicable in some cases would be to fill in our missing data. We may be able to interpolate values from the rest of our data, or use additional data sources. For our palaeogeography example above, we could generate our own coordinates, for example using <code>palaeoverse::palaeorotate()</code>.</p>
 <p>Let’s revisit our country example from Rule 5. Does our list of country codes contain NAs?</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="co"># Count the number of country codes for which `is.na()` is TRUE</span></span>
-<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>cc))</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" tabindex="-1"></a><span class="co"># Count the number of country codes for which `is.na()` is TRUE</span></span>
+<span id="cb43-2"><a href="#cb43-2" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(fossils<span class="sc">$</span>cc))</span></code></pre></div>
 </details>
 <pre><code>## [1] 2</code></pre>
 <p>Our test tells us that two of the values are <code>NA</code>: when we asked R to sort the values, it removed <code>NA</code> from the list of unique countries. However, the PBDB has set the country within which the collection is located as a compulsory entry field. How can we have missing data here? We don’t: these values are not <code>NA</code>, they are “NA” meaning Namibia, and have been misconstrued by R. This is an important illustration of why we should conduct further investigation when any apparent errors arise in the dataset, rather than immediately removing these data points.</p>
@@ -428,111 +424,111 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Rule 6: Identify and handle outliers<a href="#rule-6-identify-and-handle-outliers" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Next, we want to look for outliers. Here we will focus in on the specific variables which relate to our scientific question, i.e. the geography of our fossil occurrences. First we’ll plot where the crocodile fossils have been found across the globe: how does this match what we already know from the country codes?</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="co"># Load in a world map</span></span>
-<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a>world <span class="ot">&lt;-</span> <span class="fu">ne_countries</span>(<span class="at">scale =</span> <span class="st">&quot;medium&quot;</span>, <span class="at">returnclass =</span> <span class="st">&quot;sf&quot;</span>)</span>
-<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a></span>
-<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a><span class="co"># Plot the geographic coordinates of each locality over the world map</span></span>
-<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a><span class="fu">ggplot</span>(fossils) <span class="sc">+</span></span>
-<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world) <span class="sc">+</span></span>
-<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat)) <span class="sc">+</span></span>
-<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Longitude (º)&quot;</span>,</span>
-<span id="cb47-9"><a href="#cb47-9" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Latitude (º)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" tabindex="-1"></a><span class="co"># Load in a world map</span></span>
+<span id="cb45-2"><a href="#cb45-2" tabindex="-1"></a>world <span class="ot">&lt;-</span> <span class="fu">ne_countries</span>(<span class="at">scale =</span> <span class="st">&quot;medium&quot;</span>, <span class="at">returnclass =</span> <span class="st">&quot;sf&quot;</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" tabindex="-1"></a></span>
+<span id="cb45-4"><a href="#cb45-4" tabindex="-1"></a><span class="co"># Plot the geographic coordinates of each locality over the world map</span></span>
+<span id="cb45-5"><a href="#cb45-5" tabindex="-1"></a><span class="fu">ggplot</span>(fossils) <span class="sc">+</span></span>
+<span id="cb45-6"><a href="#cb45-6" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world) <span class="sc">+</span></span>
+<span id="cb45-7"><a href="#cb45-7" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> lng, <span class="at">y =</span> lat)) <span class="sc">+</span></span>
+<span id="cb45-8"><a href="#cb45-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Longitude (º)&quot;</span>,</span>
+<span id="cb45-9"><a href="#cb45-9" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Latitude (º)&quot;</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/map-1.png" width="100%" /></p>
 <p>We have a large density of crocodile occurrences in Europe and the western interior of the United States, along with a smattering of occurrences across the other continents. This distribution seems to fit our previous knowledge, that the occurrences are spread across 46 countries. However, the crocodile occurrences in Antarctica seem particularly suspicious: crocodiles need a warm climate, and modern-day Antarctica certainly doesn’t fit this description. Let’s investigate further. We’ll do this by plotting the latitude of the occurrences through time.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="co"># Add a column to the data frame with the midpoint of the fossil ages</span></span>
-<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">mutate</span>(fossils, <span class="at">mid_age =</span> (min_ma <span class="sc">+</span> max_ma) <span class="sc">/</span> <span class="dv">2</span>)</span>
-<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a></span>
-<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a><span class="co"># Create dataset containing only Antarctic fossils</span></span>
-<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a>Antarctic <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, cc <span class="sc">==</span> <span class="st">&quot;AA&quot;</span>)</span>
-<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a></span>
-<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a><span class="co"># Plot the age of each occurrence against its latitude</span></span>
-<span id="cb48-8"><a href="#cb48-8" tabindex="-1"></a><span class="fu">ggplot</span>(fossils, <span class="fu">aes</span>(<span class="at">x =</span> mid_age, <span class="at">y =</span> lat)) <span class="sc">+</span></span>
-<span id="cb48-9"><a href="#cb48-9" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb48-10"><a href="#cb48-10" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Antarctic, <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb48-11"><a href="#cb48-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
-<span id="cb48-12"><a href="#cb48-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Latitude (º)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb48-13"><a href="#cb48-13" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
-<span id="cb48-14"><a href="#cb48-14" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
-<span id="cb48-15"><a href="#cb48-15" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a><span class="co"># Add a column to the data frame with the midpoint of the fossil ages</span></span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">mutate</span>(fossils, <span class="at">mid_ma =</span> (min_ma <span class="sc">+</span> max_ma) <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb46-3"><a href="#cb46-3" tabindex="-1"></a></span>
+<span id="cb46-4"><a href="#cb46-4" tabindex="-1"></a><span class="co"># Create dataset containing only Antarctic fossils</span></span>
+<span id="cb46-5"><a href="#cb46-5" tabindex="-1"></a>Antarctic <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, cc <span class="sc">==</span> <span class="st">&quot;AA&quot;</span>)</span>
+<span id="cb46-6"><a href="#cb46-6" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="#cb46-7" tabindex="-1"></a><span class="co"># Plot the age of each occurrence against its latitude</span></span>
+<span id="cb46-8"><a href="#cb46-8" tabindex="-1"></a><span class="fu">ggplot</span>(fossils, <span class="fu">aes</span>(<span class="at">x =</span> mid_ma, <span class="at">y =</span> lat)) <span class="sc">+</span></span>
+<span id="cb46-9"><a href="#cb46-9" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb46-10"><a href="#cb46-10" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Antarctic, <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb46-11"><a href="#cb46-11" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
+<span id="cb46-12"><a href="#cb46-12" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Latitude (º)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb46-13"><a href="#cb46-13" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb46-14"><a href="#cb46-14" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb46-15"><a href="#cb46-15" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/lat_time-1.png" width="100%" /></p>
 <p>Here we can see the latitude of each occurrence, plotted against the temporal midpoint of the collection. We have highlighted our Antarctic occurrences in red - these points are still looking pretty anomalous.</p>
 <p>But, wait, we should actually be looking at <strong>palaeo</strong>latitude instead. Let’s plot that against time.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="co"># Plot the age of each occurrence against its palaeolatitude</span></span>
-<span id="cb49-2"><a href="#cb49-2" tabindex="-1"></a><span class="fu">ggplot</span>(fossils, <span class="fu">aes</span>(<span class="at">x =</span> mid_age, <span class="at">y =</span> paleolat)) <span class="sc">+</span></span>
-<span id="cb49-3"><a href="#cb49-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
-<span id="cb49-4"><a href="#cb49-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Antarctic, <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
-<span id="cb49-5"><a href="#cb49-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
-<span id="cb49-6"><a href="#cb49-6" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb49-7"><a href="#cb49-7" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
-<span id="cb49-8"><a href="#cb49-8" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
-<span id="cb49-9"><a href="#cb49-9" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" tabindex="-1"></a><span class="co"># Plot the age of each occurrence against its palaeolatitude</span></span>
+<span id="cb47-2"><a href="#cb47-2" tabindex="-1"></a><span class="fu">ggplot</span>(fossils, <span class="fu">aes</span>(<span class="at">x =</span> mid_ma, <span class="at">y =</span> paleolat)) <span class="sc">+</span></span>
+<span id="cb47-3"><a href="#cb47-3" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="sc">+</span></span>
+<span id="cb47-4"><a href="#cb47-4" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> Antarctic, <span class="at">colour =</span> <span class="st">&quot;red&quot;</span>) <span class="sc">+</span></span>
+<span id="cb47-5"><a href="#cb47-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
+<span id="cb47-6"><a href="#cb47-6" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb47-7"><a href="#cb47-7" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb47-8"><a href="#cb47-8" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb47-9"><a href="#cb47-9" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/palaeolat_time-1.png" width="100%" /></p>
 <p>Hmm… when we look at palaeolatitude the Antarctic occurrences are even <strong>further</strong> south. Time to really check out these occurrences. Which collections are they within?</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="co"># Find Antarctic collection numbers</span></span>
-<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a><span class="fu">unique</span>(Antarctic<span class="sc">$</span>collection_no)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="co"># Find Antarctic collection numbers</span></span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a><span class="fu">unique</span>(Antarctic<span class="sc">$</span>collection_no)</span></code></pre></div>
 </details>
 <pre><code>## [1]  43030 120887  31173</code></pre>
 <p>Well, upon further visual inspection using the PBDB website, all appear to be fairly legitimate. However, all three occurrences still appear to be outliers, especially as in the late Eocene <a href="https://doi.org/10.1038/s41586-018-0272-2">temperatures were dropping</a>. What about the taxonomic certainty of these occurrences?</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="co"># List taxonomic names associated with Antarctic occurrences</span></span>
-<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a>Antarctic<span class="sc">$</span>identified_name</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="co"># List taxonomic names associated with Antarctic occurrences</span></span>
+<span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a>Antarctic<span class="sc">$</span>identified_name</span></code></pre></div>
 </details>
 <pre><code>## [1] &quot;Crocodilia indet.&quot; &quot;Crocodylia indet.&quot; &quot;Crocodylia indet.&quot;</code></pre>
 <p>Since all three occurrences are listed as “Crocodylia indet.”, it may make sense to remove them from further analyses anyway.</p>
 <p>Let’s investigate if there are any other anomalies or outliers in our data. We’ll bin the occurrences by stage to look for stage-level outliers, using boxplots to show us any anomalous data points.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co"># Put occurrences into stage bins</span></span>
-<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">time_bins</span>(<span class="at">scale =</span> <span class="st">&quot;international ages&quot;</span>)</span>
-<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">bin_time</span>(<span class="at">occdf =</span> fossils, <span class="at">bins =</span> bins,</span>
-<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a>                    <span class="at">min_ma =</span> <span class="st">&quot;min_ma&quot;</span>, <span class="at">max_ma =</span> <span class="st">&quot;max_ma&quot;</span>, <span class="at">method =</span> <span class="st">&quot;majority&quot;</span>)</span>
-<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a></span>
-<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="co"># Add interval name labels to occurrences</span></span>
-<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">select</span>(bins, bin, interval_name)</span>
-<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">left_join</span>(fossils, bins, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;bin_assignment&quot;</span> <span class="ot">=</span> <span class="st">&quot;bin&quot;</span>))</span>
-<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a></span>
-<span id="cb54-10"><a href="#cb54-10" tabindex="-1"></a><span class="co"># Plot occurrences</span></span>
-<span id="cb54-11"><a href="#cb54-11" tabindex="-1"></a><span class="fu">ggplot</span>(fossils, <span class="fu">aes</span>(<span class="at">x =</span> bin_midpoint, <span class="at">y =</span> paleolat, <span class="at">fill =</span> interval_name)) <span class="sc">+</span></span>
-<span id="cb54-12"><a href="#cb54-12" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb54-13"><a href="#cb54-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
-<span id="cb54-14"><a href="#cb54-14" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb54-15"><a href="#cb54-15" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
-<span id="cb54-16"><a href="#cb54-16" tabindex="-1"></a>  <span class="fu">scale_fill_geo</span>(<span class="st">&quot;stages&quot;</span>) <span class="sc">+</span></span>
-<span id="cb54-17"><a href="#cb54-17" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="co"># Put occurrences into stage bins</span></span>
+<span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">time_bins</span>(<span class="at">scale =</span> <span class="st">&quot;international ages&quot;</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">bin_time</span>(<span class="at">occdf =</span> fossils, <span class="at">bins =</span> bins,</span>
+<span id="cb52-4"><a href="#cb52-4" tabindex="-1"></a>                    <span class="at">min_ma =</span> <span class="st">&quot;min_ma&quot;</span>, <span class="at">max_ma =</span> <span class="st">&quot;max_ma&quot;</span>, <span class="at">method =</span> <span class="st">&quot;majority&quot;</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" tabindex="-1"></a></span>
+<span id="cb52-6"><a href="#cb52-6" tabindex="-1"></a><span class="co"># Add interval name labels to occurrences</span></span>
+<span id="cb52-7"><a href="#cb52-7" tabindex="-1"></a>bins <span class="ot">&lt;-</span> <span class="fu">select</span>(bins, bin, interval_name)</span>
+<span id="cb52-8"><a href="#cb52-8" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">left_join</span>(fossils, bins, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">&quot;bin_assignment&quot;</span> <span class="ot">=</span> <span class="st">&quot;bin&quot;</span>))</span>
+<span id="cb52-9"><a href="#cb52-9" tabindex="-1"></a></span>
+<span id="cb52-10"><a href="#cb52-10" tabindex="-1"></a><span class="co"># Plot occurrences</span></span>
+<span id="cb52-11"><a href="#cb52-11" tabindex="-1"></a><span class="fu">ggplot</span>(fossils, <span class="fu">aes</span>(<span class="at">x =</span> bin_midpoint, <span class="at">y =</span> paleolat, <span class="at">fill =</span> interval_name)) <span class="sc">+</span></span>
+<span id="cb52-12"><a href="#cb52-12" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb52-13"><a href="#cb52-13" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
+<span id="cb52-14"><a href="#cb52-14" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb52-15"><a href="#cb52-15" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb52-16"><a href="#cb52-16" tabindex="-1"></a>  <span class="fu">scale_fill_geo</span>(<span class="st">&quot;stages&quot;</span>) <span class="sc">+</span></span>
+<span id="cb52-17"><a href="#cb52-17" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/lat_time_binned-1.png" width="100%" /></p>
 <p>Box plots are a great way to look for outliers, because their calculation automatically includes outlier determination, and any such points can clearly be seen in the graph. At time of writing, the guidance for <code>geom_boxplot()</code> states that “The upper whisker extends from the hinge to the largest value no further than 1.5 * IQR from the hinge (where IQR is the inter-quartile range, or distance between the first and third quartiles). The lower whisker extends from the hinge to the smallest value at most 1.5 * IQR of the hinge. Data beyond the end of the whiskers are called ‘outlying’ points and are plotted individually.” 1.5 times the interquartile range seems a reasonable cut-off for determining outliers, so we will use these plots at face value to identify data points to check.</p>
 <p>Here, the Ypresian (“Y”) is looking pretty suspicious - it seems to have a lot of outliers. Let’s plot the Ypresian occurrences on a palaeogeographic map to investigate further.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="co"># Load map of the Ypresian, and identify Ypresian fossils</span></span>
-<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a>fossils_y <span class="ot">&lt;-</span> fossils <span class="sc">%&gt;%</span></span>
-<span id="cb55-3"><a href="#cb55-3" tabindex="-1"></a>  <span class="fu">filter</span>(interval_name <span class="sc">==</span> <span class="st">&quot;Ypresian&quot;</span>)</span>
-<span id="cb55-4"><a href="#cb55-4" tabindex="-1"></a>world_y <span class="ot">&lt;-</span> <span class="fu">reconstruct</span>(<span class="st">&quot;coastlines&quot;</span>, <span class="at">model =</span> <span class="st">&quot;PALEOMAP&quot;</span>, <span class="at">age =</span> <span class="fl">51.9</span>)</span>
-<span id="cb55-5"><a href="#cb55-5" tabindex="-1"></a></span>
-<span id="cb55-6"><a href="#cb55-6" tabindex="-1"></a><span class="co"># Plot localities on the Ypresian map</span></span>
-<span id="cb55-7"><a href="#cb55-7" tabindex="-1"></a><span class="fu">ggplot</span>(fossils_y) <span class="sc">+</span></span>
-<span id="cb55-8"><a href="#cb55-8" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world_y) <span class="sc">+</span></span>
-<span id="cb55-9"><a href="#cb55-9" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> paleolng, <span class="at">y =</span> paleolat)) <span class="sc">+</span></span>
-<span id="cb55-10"><a href="#cb55-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Palaeolongitude (º)&quot;</span>,</span>
-<span id="cb55-11"><a href="#cb55-11" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="co"># Load map of the Ypresian, and identify Ypresian fossils</span></span>
+<span id="cb53-2"><a href="#cb53-2" tabindex="-1"></a>fossils_y <span class="ot">&lt;-</span> fossils <span class="sc">%&gt;%</span></span>
+<span id="cb53-3"><a href="#cb53-3" tabindex="-1"></a>  <span class="fu">filter</span>(interval_name <span class="sc">==</span> <span class="st">&quot;Ypresian&quot;</span>)</span>
+<span id="cb53-4"><a href="#cb53-4" tabindex="-1"></a>world_y <span class="ot">&lt;-</span> <span class="fu">reconstruct</span>(<span class="st">&quot;coastlines&quot;</span>, <span class="at">model =</span> <span class="st">&quot;PALEOMAP&quot;</span>, <span class="at">age =</span> <span class="fl">51.9</span>)</span>
+<span id="cb53-5"><a href="#cb53-5" tabindex="-1"></a></span>
+<span id="cb53-6"><a href="#cb53-6" tabindex="-1"></a><span class="co"># Plot localities on the Ypresian map</span></span>
+<span id="cb53-7"><a href="#cb53-7" tabindex="-1"></a><span class="fu">ggplot</span>(fossils_y) <span class="sc">+</span></span>
+<span id="cb53-8"><a href="#cb53-8" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> world_y) <span class="sc">+</span></span>
+<span id="cb53-9"><a href="#cb53-9" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">x =</span> paleolng, <span class="at">y =</span> paleolat)) <span class="sc">+</span></span>
+<span id="cb53-10"><a href="#cb53-10" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Palaeolongitude (º)&quot;</span>,</span>
+<span id="cb53-11"><a href="#cb53-11" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/map_ypresian-1.png" width="100%" /></p>
 <p>Aha! There is a concentrated cluster of occurrences in the western interior of North America. This high number of occurrences is increasing the weight of data at this palaeolatitude, and narrowing the boundaries at which other points are considered outliers. We can check the effect this is having on our outlier identification by removing the US occurrences from the dataset and checking the distribution again.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="co"># Remove US fossils from the Ypresian dataset</span></span>
-<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a>fossils_y <span class="ot">&lt;-</span> fossils_y <span class="sc">%&gt;%</span></span>
-<span id="cb56-3"><a href="#cb56-3" tabindex="-1"></a>  <span class="fu">filter</span>(cc <span class="sc">!=</span> <span class="st">&quot;US&quot;</span>)</span>
-<span id="cb56-4"><a href="#cb56-4" tabindex="-1"></a></span>
-<span id="cb56-5"><a href="#cb56-5" tabindex="-1"></a><span class="co"># Plot boxplot of non-US Ypresian fossil palaeolatitudes</span></span>
-<span id="cb56-6"><a href="#cb56-6" tabindex="-1"></a><span class="fu">ggplot</span>(fossils_y) <span class="sc">+</span></span>
-<span id="cb56-7"><a href="#cb56-7" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> paleolat)) <span class="sc">+</span></span>
-<span id="cb56-8"><a href="#cb56-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb56-9"><a href="#cb56-9" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" tabindex="-1"></a><span class="co"># Remove US fossils from the Ypresian dataset</span></span>
+<span id="cb54-2"><a href="#cb54-2" tabindex="-1"></a>fossils_y <span class="ot">&lt;-</span> fossils_y <span class="sc">%&gt;%</span></span>
+<span id="cb54-3"><a href="#cb54-3" tabindex="-1"></a>  <span class="fu">filter</span>(cc <span class="sc">!=</span> <span class="st">&quot;US&quot;</span>)</span>
+<span id="cb54-4"><a href="#cb54-4" tabindex="-1"></a></span>
+<span id="cb54-5"><a href="#cb54-5" tabindex="-1"></a><span class="co"># Plot boxplot of non-US Ypresian fossil palaeolatitudes</span></span>
+<span id="cb54-6"><a href="#cb54-6" tabindex="-1"></a><span class="fu">ggplot</span>(fossils_y) <span class="sc">+</span></span>
+<span id="cb54-7"><a href="#cb54-7" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="fu">aes</span>(<span class="at">y =</span> paleolat)) <span class="sc">+</span></span>
+<span id="cb54-8"><a href="#cb54-8" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb54-9"><a href="#cb54-9" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="cn">NULL</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/lat_ypresian-1.png" width="100%" /></p>
 <p>We can now see that none of our occurrences are being flagged as outliers. Without this strong geographic bias towards the US, all of the occurrences in the Ypresian appear to be reasonable. This fits our prior knowledge, as <a href="https://doi.org/10.1038/s41586-018-0272-2">elevated global temperatures during this time</a> likely helped crocodiles to live at higher latitudes than was possible earlier in the Paleogene.</p>
@@ -542,8 +538,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2>Rule 7: Identify and handle inconsistencies<a href="#rule-7-identify-and-handle-inconsistencies" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We’re now going to look for inconsistencies in our dataset. Let’s start by revisiting its structure, focusing on whether the class types of the variables make sense.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="co"># Check the data class of each field in our dataset</span></span>
-<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a><span class="fu">str</span>(fossils)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="co"># Check the data class of each field in our dataset</span></span>
+<span id="cb55-2"><a href="#cb55-2" tabindex="-1"></a><span class="fu">str</span>(fossils)</span></code></pre></div>
 </details>
 <pre><code>## tibble [868 × 137] (S3: tbl_df/tbl/data.frame)
 ##  $ occurrence_no        : num [1:868] 40163 40167 40168 40169 150323 ...
@@ -650,8 +646,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Now let’s dive in further to look for inconsistencies in spelling, which could cause taxonomic names or geological units to be grouped separately when they are really the same thing. We’ll start by checking for potential taxonomic misspellings.</p>
 <p>We can use the table() function to look at the frequencies of various taxonomic names in the dataset. Here, inconsistencies like misspellings or antiquated taxonomic names might be recognised. We will check the columns <code>family</code>, <code>genus</code>, and <code>accepted_name</code>, the latter of which gives the name of the identification regardless of taxonomic level, and is the only column to give species binomials.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="co"># Tabulate the frequency of values in the &quot;family&quot; and &quot;genus&quot; columns</span></span>
-<span id="cb59-2"><a href="#cb59-2" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>family)</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" tabindex="-1"></a><span class="co"># Tabulate the frequency of values in the &quot;family&quot; and &quot;genus&quot; columns</span></span>
+<span id="cb57-2"><a href="#cb57-2" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>family)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##       Alligatoridae        Crocodylidae          Gavialidae NO_FAMILY_SPECIFIED 
@@ -659,7 +655,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##      Planocraniidae 
 ##                  24</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>genus)</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>genus)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##       Ahdeskatanka      Akanthosuchus      Aktiogavialis          Alligator 
@@ -697,10 +693,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##        Ultrastenos    Wannaganosuchus 
 ##                  2                  1</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="co"># Filter occurrences to those identified at species level, then tabulate species</span></span>
-<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a><span class="co"># names</span></span>
-<span id="cb63-3"><a href="#cb63-3" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, accepted_rank <span class="sc">==</span> <span class="st">&quot;species&quot;</span>)</span>
-<span id="cb63-4"><a href="#cb63-4" tabindex="-1"></a><span class="fu">table</span>(fossils_sp<span class="sc">$</span>accepted_name)</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" tabindex="-1"></a><span class="co"># Filter occurrences to those identified at species level, then tabulate species</span></span>
+<span id="cb61-2"><a href="#cb61-2" tabindex="-1"></a><span class="co"># names</span></span>
+<span id="cb61-3"><a href="#cb61-3" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, accepted_rank <span class="sc">==</span> <span class="st">&quot;species&quot;</span>)</span>
+<span id="cb61-4"><a href="#cb61-4" tabindex="-1"></a><span class="fu">table</span>(fossils_sp<span class="sc">$</span>accepted_name)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##    Ahdeskatanka russlanddeutsche          Akanthosuchus langstoni 
@@ -811,8 +807,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##                                1</code></pre>
 <p>Alternatively, we can use the <code>tax_check()</code> function in the <code>palaeoverse</code> package, which systematically searches for and flags potential spelling variation using a defined dissimilarity threshold.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a><span class="co"># Check for close spellings in the &quot;genus&quot; column</span></span>
-<span id="cb65-2"><a href="#cb65-2" tabindex="-1"></a><span class="fu">tax_check</span>(<span class="at">taxdf =</span> fossils, <span class="at">name =</span> <span class="st">&quot;genus&quot;</span>, <span class="at">dis =</span> <span class="fl">0.1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" tabindex="-1"></a><span class="co"># Check for close spellings in the &quot;genus&quot; column</span></span>
+<span id="cb63-2"><a href="#cb63-2" tabindex="-1"></a><span class="fu">tax_check</span>(<span class="at">taxdf =</span> fossils, <span class="at">name =</span> <span class="st">&quot;genus&quot;</span>, <span class="at">dis =</span> <span class="fl">0.1</span>)</span></code></pre></div>
 </details>
 <pre><code>## $synonyms
 ## NULL
@@ -823,8 +819,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## $non_letter_group
 ## NULL</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a><span class="co"># Check for close spellings in the &quot;accepted_name&quot; column</span></span>
-<span id="cb67-2"><a href="#cb67-2" tabindex="-1"></a><span class="fu">tax_check</span>(<span class="at">taxdf =</span> fossils_sp, <span class="at">name =</span> <span class="st">&quot;accepted_name&quot;</span> , <span class="at">dis =</span> <span class="fl">0.1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" tabindex="-1"></a><span class="co"># Check for close spellings in the &quot;accepted_name&quot; column</span></span>
+<span id="cb65-2"><a href="#cb65-2" tabindex="-1"></a><span class="fu">tax_check</span>(<span class="at">taxdf =</span> fossils_sp, <span class="at">name =</span> <span class="st">&quot;accepted_name&quot;</span> , <span class="at">dis =</span> <span class="fl">0.1</span>)</span></code></pre></div>
 </details>
 <pre><code>## $synonyms
 ## NULL
@@ -837,11 +833,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>No names are flagged here, so that seems fine.</p>
 <p>We can also check formatting and spelling using the <code>fossilbrush</code> package.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" tabindex="-1"></a><span class="co"># Create a list of taxonomic ranks to check</span></span>
-<span id="cb69-2"><a href="#cb69-2" tabindex="-1"></a>fossil_ranks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;phylum&quot;</span>, <span class="st">&quot;class&quot;</span>, <span class="st">&quot;order&quot;</span>, <span class="st">&quot;family&quot;</span>, <span class="st">&quot;genus&quot;</span>)</span>
-<span id="cb69-3"><a href="#cb69-3" tabindex="-1"></a></span>
-<span id="cb69-4"><a href="#cb69-4" tabindex="-1"></a><span class="co"># Run checks</span></span>
-<span id="cb69-5"><a href="#cb69-5" tabindex="-1"></a><span class="fu">check_taxonomy</span>(<span class="fu">as.data.frame</span>(fossils), <span class="at">ranks =</span> fossil_ranks)</span></code></pre></div>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" tabindex="-1"></a><span class="co"># Create a list of taxonomic ranks to check</span></span>
+<span id="cb67-2"><a href="#cb67-2" tabindex="-1"></a>fossil_ranks <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;phylum&quot;</span>, <span class="st">&quot;class&quot;</span>, <span class="st">&quot;order&quot;</span>, <span class="st">&quot;family&quot;</span>, <span class="st">&quot;genus&quot;</span>)</span>
+<span id="cb67-3"><a href="#cb67-3" tabindex="-1"></a></span>
+<span id="cb67-4"><a href="#cb67-4" tabindex="-1"></a><span class="co"># Run checks</span></span>
+<span id="cb67-5"><a href="#cb67-5" tabindex="-1"></a><span class="fu">check_taxonomy</span>(<span class="fu">as.data.frame</span>(fossils), <span class="at">ranks =</span> fossil_ranks)</span></code></pre></div>
 </details>
 <pre><code>## Checking formatting [1/4]</code></pre>
 <pre><code>##  - formatting errors detected (see $formatting in output)</code></pre>
@@ -935,8 +931,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>As before, no major inconsistencies or potential spelling errors were flagged.</p>
 <p>The PBDB has an integrated taxonomy system which limits the extent to which taxon name inconsistencies can arise. However, this is not the case for some other data fields. Let’s check the formation names for our occurrences. This could be important if, for example, we wanted to include information about the number of formations from which our fossils are taken within the manuscript - a misspelling could inflate our count.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="co"># Tabulating the frequency of each formation</span></span>
-<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>formation)</span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" tabindex="-1"></a><span class="co"># Tabulating the frequency of each formation</span></span>
+<span id="cb77-2"><a href="#cb77-2" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>formation)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##                    ? Tepee Trail                     &quot;Brian Head&quot; 
@@ -1106,13 +1102,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##                         Youganwo 
 ##                                2</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="co"># Checking for spelling variation</span></span>
-<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a><span class="fu">tax_check</span>(<span class="at">taxdf =</span> fossils, <span class="at">name =</span> <span class="st">&quot;formation&quot;</span>, <span class="at">dis =</span> <span class="fl">0.1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" tabindex="-1"></a><span class="co"># Checking for spelling variation</span></span>
+<span id="cb79-2"><a href="#cb79-2" tabindex="-1"></a><span class="fu">tax_check</span>(<span class="at">taxdf =</span> fossils, <span class="at">name =</span> <span class="st">&quot;formation&quot;</span>, <span class="at">dis =</span> <span class="fl">0.1</span>)</span></code></pre></div>
 </details>
-<pre><code>## Warning in tax_check(taxdf = fossils, name = &quot;formation&quot;, dis = 0.1):
-## Non-letter characters present in the group names</code></pre>
-<pre><code>## Warning in tax_check(taxdf = fossils, name = &quot;formation&quot;, dis = 0.1):
-## Non-letter characters present in the taxon names</code></pre>
 <pre><code>## $synonyms
 ##   group       greater        lesser count_greater count_lesser
 ## 1     A        Ashawq       Ashawaq             1            1
@@ -1132,9 +1124,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Here, we see four flagged formation name pairs, which vary in how problematic they seem. For example “Couche II” and “Couche I” make sense as an adjacent pair of formations, and are likely not a mistake. However, we also see “San Sebastián” and “San Sebastian”, which should be unified under the same name, either with or without the accent included.</p>
 <p>We can also look for inconsistencies in the interval names and dates. For example, an interval could be spelled two different ways, or have multiple associated dates.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" tabindex="-1"></a><span class="co"># Again, we can use the table() function to tabulate the frequency of each </span></span>
-<span id="cb85-2"><a href="#cb85-2" tabindex="-1"></a><span class="co"># interval</span></span>
-<span id="cb85-3"><a href="#cb85-3" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>early_interval)</span></code></pre></div>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" tabindex="-1"></a><span class="co"># Again, we can use the table() function to tabulate the frequency of each </span></span>
+<span id="cb81-2"><a href="#cb81-2" tabindex="-1"></a><span class="co"># interval</span></span>
+<span id="cb81-3"><a href="#cb81-3" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>early_interval)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##      Arikareean       Arshantan       Bartonian      Bridgerian             Cf1 
@@ -1160,7 +1152,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##          Uintan      Wasatchian       Whitneyan        Ypresian 
 ##               5             185               1              38</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>late_interval)</span></code></pre></div>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" tabindex="-1"></a><span class="fu">table</span>(fossils<span class="sc">$</span>late_interval)</span></code></pre></div>
 </details>
 <pre><code>## 
 ##       Bartonian      Bridgerian        Chattian    Clarkforkian      Duchesnean 
@@ -1172,12 +1164,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##        Rupelian       Selandian       Thanetian     Torrejonian        Ypresian 
 ##               4               2               2               1               3</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" tabindex="-1"></a><span class="co"># What are the ages associated with each interval? Any issues with the date </span></span>
-<span id="cb89-2"><a href="#cb89-2" tabindex="-1"></a><span class="co"># formats?</span></span>
-<span id="cb89-3"><a href="#cb89-3" tabindex="-1"></a>fossils <span class="sc">%&gt;%</span> </span>
-<span id="cb89-4"><a href="#cb89-4" tabindex="-1"></a>  <span class="fu">group_by</span>(early_interval) <span class="sc">%&gt;%</span> <span class="co"># Grouping by interval</span></span>
-<span id="cb89-5"><a href="#cb89-5" tabindex="-1"></a>  <span class="fu">distinct</span>(max_ma) <span class="sc">%&gt;%</span>  <span class="co"># Pulling out the distinct values</span></span>
-<span id="cb89-6"><a href="#cb89-6" tabindex="-1"></a>  <span class="fu">arrange</span>(early_interval) <span class="co"># Putting list in order to scan for inconsistencies</span></span></code></pre></div>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" tabindex="-1"></a><span class="co"># What are the ages associated with each interval? Any issues with the date </span></span>
+<span id="cb85-2"><a href="#cb85-2" tabindex="-1"></a><span class="co"># formats?</span></span>
+<span id="cb85-3"><a href="#cb85-3" tabindex="-1"></a>fossils <span class="sc">%&gt;%</span> </span>
+<span id="cb85-4"><a href="#cb85-4" tabindex="-1"></a>  <span class="fu">group_by</span>(early_interval) <span class="sc">%&gt;%</span> <span class="co"># Grouping by interval</span></span>
+<span id="cb85-5"><a href="#cb85-5" tabindex="-1"></a>  <span class="fu">distinct</span>(max_ma) <span class="sc">%&gt;%</span>  <span class="co"># Pulling out the distinct values</span></span>
+<span id="cb85-6"><a href="#cb85-6" tabindex="-1"></a>  <span class="fu">arrange</span>(early_interval) <span class="co"># Putting list in order to scan for inconsistencies</span></span></code></pre></div>
 </details>
 <pre><code>## # A tibble: 54 × 2
 ## # Groups:   early_interval [54]
@@ -1195,10 +1187,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 10 Clarkforkian     56.2
 ## # ℹ 44 more rows</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" tabindex="-1"></a>fossils <span class="sc">%&gt;%</span> </span>
-<span id="cb91-2"><a href="#cb91-2" tabindex="-1"></a>  <span class="fu">group_by</span>(late_interval) <span class="sc">%&gt;%</span></span>
-<span id="cb91-3"><a href="#cb91-3" tabindex="-1"></a>  <span class="fu">distinct</span>(min_ma) <span class="sc">%&gt;%</span> </span>
-<span id="cb91-4"><a href="#cb91-4" tabindex="-1"></a>  <span class="fu">arrange</span>(late_interval)</span></code></pre></div>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" tabindex="-1"></a>fossils <span class="sc">%&gt;%</span> </span>
+<span id="cb87-2"><a href="#cb87-2" tabindex="-1"></a>  <span class="fu">group_by</span>(late_interval) <span class="sc">%&gt;%</span></span>
+<span id="cb87-3"><a href="#cb87-3" tabindex="-1"></a>  <span class="fu">distinct</span>(min_ma) <span class="sc">%&gt;%</span> </span>
+<span id="cb87-4"><a href="#cb87-4" tabindex="-1"></a>  <span class="fu">arrange</span>(late_interval)</span></code></pre></div>
 </details>
 <pre><code>## # A tibble: 39 × 2
 ## # Groups:   late_interval [21]
@@ -1217,49 +1209,49 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## # ℹ 29 more rows</code></pre>
 <p>Finally, let’s check the coordinates using the <code>CoordinateCleaner</code> package.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" tabindex="-1"></a><span class="co"># Is the coordinate formatting OK? Numeric and part of a lat/long system?</span></span>
-<span id="cb93-2"><a href="#cb93-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cc_val</span>(fossils, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" tabindex="-1"></a><span class="co"># Is the coordinate formatting OK? Numeric and part of a lat/long system?</span></span>
+<span id="cb89-2"><a href="#cb89-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cc_val</span>(fossils, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing coordinate validity</code></pre>
 <pre><code>## Removed 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" tabindex="-1"></a>paleocoord_check <span class="ot">&lt;-</span> <span class="fu">cc_val</span>(fossils, <span class="at">lat =</span> <span class="st">&quot;paleolat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;paleolng&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" tabindex="-1"></a>paleocoord_check <span class="ot">&lt;-</span> <span class="fu">cc_val</span>(fossils, <span class="at">lat =</span> <span class="st">&quot;paleolat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;paleolng&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing coordinate validity
 ## Removed 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" tabindex="-1"></a><span class="co"># Testing for coordinates with equal lat and long</span></span>
-<span id="cb98-2"><a href="#cb98-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cc_equ</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" tabindex="-1"></a><span class="co"># Testing for coordinates with equal lat and long</span></span>
+<span id="cb94-2"><a href="#cb94-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cc_equ</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing equal lat/lon
 ## Removed 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" tabindex="-1"></a>paleocoord_check <span class="ot">&lt;-</span> <span class="fu">cc_equ</span>(paleocoord_check, <span class="at">lat =</span> <span class="st">&quot;paleolat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;paleolng&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" tabindex="-1"></a>paleocoord_check <span class="ot">&lt;-</span> <span class="fu">cc_equ</span>(paleocoord_check, <span class="at">lat =</span> <span class="st">&quot;paleolat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;paleolng&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing equal lat/lon
 ## Removed 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="#cb102-1" tabindex="-1"></a><span class="co"># Near any centroids of modern-day political units or biodiversity centers?</span></span>
-<span id="cb102-2"><a href="#cb102-2" tabindex="-1"></a>coord_cent <span class="ot">&lt;-</span> <span class="fu">cc_cen</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>, <span class="at">value =</span> <span class="st">&quot;flagged&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" tabindex="-1"></a><span class="co"># Near any centroids of modern-day political units or biodiversity centers?</span></span>
+<span id="cb98-2"><a href="#cb98-2" tabindex="-1"></a>coord_cent <span class="ot">&lt;-</span> <span class="fu">cc_cen</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>, <span class="at">value =</span> <span class="st">&quot;flagged&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing country centroids</code></pre>
 <pre><code>## Flagged 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" tabindex="-1"></a>coord_cent <span class="ot">&lt;-</span> <span class="fu">cc_inst</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>, <span class="at">value =</span> <span class="st">&quot;flagged&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" tabindex="-1"></a>coord_cent <span class="ot">&lt;-</span> <span class="fu">cc_inst</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>, <span class="at">value =</span> <span class="st">&quot;flagged&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing biodiversity institutions
 ## Flagged 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" tabindex="-1"></a><span class="co"># Any zeros?</span></span>
-<span id="cb107-2"><a href="#cb107-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cc_zero</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" tabindex="-1"></a><span class="co"># Any zeros?</span></span>
+<span id="cb103-2"><a href="#cb103-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cc_zero</span>(coord_check, <span class="at">lat =</span> <span class="st">&quot;lat&quot;</span>, <span class="at">lon =</span> <span class="st">&quot;lng&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing zero coordinates</code></pre>
 <pre><code>## Removed 0 records.</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" tabindex="-1"></a><span class="co"># We can also test for temporal mismatches</span></span>
-<span id="cb110-2"><a href="#cb110-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> coord_check[<span class="sc">!</span><span class="fu">is.na</span>(coord_check<span class="sc">$</span>min_ma),]</span>
-<span id="cb110-3"><a href="#cb110-3" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> coord_check[<span class="sc">!</span><span class="fu">is.na</span>(coord_check<span class="sc">$</span>max_ma),]</span>
-<span id="cb110-4"><a href="#cb110-4" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cf_equal</span>(coord_check, <span class="at">min_age =</span> <span class="st">&quot;min_ma&quot;</span>, <span class="at">max_age =</span> <span class="st">&quot;max_ma&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" tabindex="-1"></a><span class="co"># We can also test for temporal mismatches</span></span>
+<span id="cb106-2"><a href="#cb106-2" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> coord_check[<span class="sc">!</span><span class="fu">is.na</span>(coord_check<span class="sc">$</span>min_ma),]</span>
+<span id="cb106-3"><a href="#cb106-3" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> coord_check[<span class="sc">!</span><span class="fu">is.na</span>(coord_check<span class="sc">$</span>max_ma),]</span>
+<span id="cb106-4"><a href="#cb106-4" tabindex="-1"></a>coord_check <span class="ot">&lt;-</span> <span class="fu">cf_equal</span>(coord_check, <span class="at">min_age =</span> <span class="st">&quot;min_ma&quot;</span>, <span class="at">max_age =</span> <span class="st">&quot;max_ma&quot;</span>)</span></code></pre></div>
 </details>
 <pre><code>## Testing age validity</code></pre>
 <pre><code>## Removed 0 records.</code></pre>
@@ -1270,114 +1262,114 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Our next step is to remove duplicates. This is an important step for count data, as duplicated values will artificially inflate our counts. Here, the function <code>dplyr::distinct()</code> is incredibly useful, as we can provide it with the columns we want it to check, and it removes rows for which data within those columns is identical.</p>
 <p>First, we will remove <em>absolute</em> duplicates: by this, we mean occurrences within a single collection which have identical taxonomic names. This can occur when, for example, two species are named within a collection, one of which is later synonymised with the other.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" tabindex="-1"></a><span class="co"># Show number of rows in dataset before duplicates are removed</span></span>
-<span id="cb113-2"><a href="#cb113-2" tabindex="-1"></a><span class="fu">nrow</span>(fossils)</span></code></pre></div>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" tabindex="-1"></a><span class="co"># Show number of rows in dataset before duplicates are removed</span></span>
+<span id="cb109-2"><a href="#cb109-2" tabindex="-1"></a><span class="fu">nrow</span>(fossils)</span></code></pre></div>
 </details>
 <pre><code>## [1] 868</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" tabindex="-1"></a><span class="co"># Remove occurrences with the same collection number and `accepted_name`</span></span>
-<span id="cb115-2"><a href="#cb115-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">distinct</span>(fossils, collection_no, accepted_name, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb115-3"><a href="#cb115-3" tabindex="-1"></a></span>
-<span id="cb115-4"><a href="#cb115-4" tabindex="-1"></a><span class="co"># Show number of rows in dataset after duplicates are removed</span></span>
-<span id="cb115-5"><a href="#cb115-5" tabindex="-1"></a><span class="fu">nrow</span>(fossils)</span></code></pre></div>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" tabindex="-1"></a><span class="co"># Remove occurrences with the same collection number and `accepted_name`</span></span>
+<span id="cb111-2"><a href="#cb111-2" tabindex="-1"></a>fossils <span class="ot">&lt;-</span> <span class="fu">distinct</span>(fossils, collection_no, accepted_name, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb111-3"><a href="#cb111-3" tabindex="-1"></a></span>
+<span id="cb111-4"><a href="#cb111-4" tabindex="-1"></a><span class="co"># Show number of rows in dataset after duplicates are removed</span></span>
+<span id="cb111-5"><a href="#cb111-5" tabindex="-1"></a><span class="fu">nrow</span>(fossils)</span></code></pre></div>
 </details>
 <pre><code>## [1] 844</code></pre>
 <p>The number of rows dropped from 868 to 844 - this means 24 of our occurrences were absolute duplicates, which have now been removed.</p>
 <p>Next, we can look at geographic duplicates. We mentioned earlier that sometimes PBDB collections are entered separately for different beds from the same locality, and this means that the number of collections can be higher than the number of geographic sampling localities. Let’s check whether this is the case in our dataset.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" tabindex="-1"></a><span class="co"># Remove duplicates based on geographic coordinates</span></span>
-<span id="cb117-2"><a href="#cb117-2" tabindex="-1"></a>fossils_localities <span class="ot">&lt;-</span> <span class="fu">distinct</span>(fossils, lng, lat, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb117-3"><a href="#cb117-3" tabindex="-1"></a></span>
-<span id="cb117-4"><a href="#cb117-4" tabindex="-1"></a><span class="co"># Compare length of vector of unique collection numbers with and without this</span></span>
-<span id="cb117-5"><a href="#cb117-5" tabindex="-1"></a><span class="co"># filter</span></span>
-<span id="cb117-6"><a href="#cb117-6" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>collection_no))</span></code></pre></div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" tabindex="-1"></a><span class="co"># Remove duplicates based on geographic coordinates</span></span>
+<span id="cb113-2"><a href="#cb113-2" tabindex="-1"></a>fossils_localities <span class="ot">&lt;-</span> <span class="fu">distinct</span>(fossils, lng, lat, <span class="at">.keep_all =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb113-3"><a href="#cb113-3" tabindex="-1"></a></span>
+<span id="cb113-4"><a href="#cb113-4" tabindex="-1"></a><span class="co"># Compare length of vector of unique collection numbers with and without this</span></span>
+<span id="cb113-5"><a href="#cb113-5" tabindex="-1"></a><span class="co"># filter</span></span>
+<span id="cb113-6"><a href="#cb113-6" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>collection_no))</span></code></pre></div>
 </details>
 <pre><code>## [1] 703</code></pre>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils_localities<span class="sc">$</span>collection_no))</span></code></pre></div>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="#cb115-1" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(fossils_localities<span class="sc">$</span>collection_no))</span></code></pre></div>
 </details>
 <pre><code>## [1] 518</code></pre>
 <p>Here we can see that our original dataset contains 703 collections, but once we remove latitude-longitude repeats, this drops to 518. This means that we have 518 geographically distinct localities, across which 703 fossil sampling events have taken place.</p>
 <p>If we are interested in taxonomic diversity, we can also look at repeated names in our dataset. For example, we might want to identify taxa which are represented multiple times in order to then return to the literature and check that they definitely represent the same taxon. We can do this by flagging species names which are represented more than once in the dataset.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" tabindex="-1"></a><span class="co"># Update dataset of occurrences identified to species level</span></span>
-<span id="cb121-2"><a href="#cb121-2" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, accepted_rank <span class="sc">==</span> <span class="st">&quot;species&quot;</span>)</span>
-<span id="cb121-3"><a href="#cb121-3" tabindex="-1"></a>  </span>
-<span id="cb121-4"><a href="#cb121-4" tabindex="-1"></a><span class="co"># Identify and flag taxonomic duplicates</span></span>
-<span id="cb121-5"><a href="#cb121-5" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> fossils_sp <span class="sc">%&gt;%</span> </span>
-<span id="cb121-6"><a href="#cb121-6" tabindex="-1"></a>  <span class="fu">group_by</span>(accepted_name) <span class="sc">%&gt;%</span> </span>
-<span id="cb121-7"><a href="#cb121-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">duplicate_flag =</span> <span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>)</span>
-<span id="cb121-8"><a href="#cb121-8" tabindex="-1"></a></span>
-<span id="cb121-9"><a href="#cb121-9" tabindex="-1"></a><span class="co"># Show counts of flagged occurrences</span></span>
-<span id="cb121-10"><a href="#cb121-10" tabindex="-1"></a><span class="fu">table</span>(fossils_sp<span class="sc">$</span>duplicate_flag)</span></code></pre></div>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" tabindex="-1"></a><span class="co"># Update dataset of occurrences identified to species level</span></span>
+<span id="cb117-2"><a href="#cb117-2" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, accepted_rank <span class="sc">==</span> <span class="st">&quot;species&quot;</span>)</span>
+<span id="cb117-3"><a href="#cb117-3" tabindex="-1"></a>  </span>
+<span id="cb117-4"><a href="#cb117-4" tabindex="-1"></a><span class="co"># Identify and flag taxonomic duplicates</span></span>
+<span id="cb117-5"><a href="#cb117-5" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> fossils_sp <span class="sc">%&gt;%</span> </span>
+<span id="cb117-6"><a href="#cb117-6" tabindex="-1"></a>  <span class="fu">group_by</span>(accepted_name) <span class="sc">%&gt;%</span> </span>
+<span id="cb117-7"><a href="#cb117-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">duplicate_flag =</span> <span class="fu">n</span>() <span class="sc">&gt;</span> <span class="dv">1</span>)</span>
+<span id="cb117-8"><a href="#cb117-8" tabindex="-1"></a></span>
+<span id="cb117-9"><a href="#cb117-9" tabindex="-1"></a><span class="co"># Show counts of flagged occurrences</span></span>
+<span id="cb117-10"><a href="#cb117-10" tabindex="-1"></a><span class="fu">table</span>(fossils_sp<span class="sc">$</span>duplicate_flag)</span></code></pre></div>
 </details>
 <pre><code>## 
 ## FALSE  TRUE 
 ##    57   185</code></pre>
 <p>Our counts show 57 <code>FALSE</code> values, indicating that 57 species are represented by a single occurrence. We also have 185 <code>TRUE</code> values, for which the species is represented two or more times. We can then filter our dataset to those flagged, and sort them by their name, enabling easier checking.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="#cb123-1" tabindex="-1"></a><span class="co"># Filter table to flagged occurrences</span></span>
-<span id="cb123-2"><a href="#cb123-2" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils_sp, duplicate_flag <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
-<span id="cb123-3"><a href="#cb123-3" tabindex="-1"></a></span>
-<span id="cb123-4"><a href="#cb123-4" tabindex="-1"></a><span class="co"># Sort table by genus name</span></span>
-<span id="cb123-5"><a href="#cb123-5" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">arrange</span>(fossils_sp, accepted_name)</span></code></pre></div>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" tabindex="-1"></a><span class="co"># Filter table to flagged occurrences</span></span>
+<span id="cb119-2"><a href="#cb119-2" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils_sp, duplicate_flag <span class="sc">==</span> <span class="cn">TRUE</span>)</span>
+<span id="cb119-3"><a href="#cb119-3" tabindex="-1"></a></span>
+<span id="cb119-4"><a href="#cb119-4" tabindex="-1"></a><span class="co"># Sort table by genus name</span></span>
+<span id="cb119-5"><a href="#cb119-5" tabindex="-1"></a>fossils_sp <span class="ot">&lt;-</span> <span class="fu">arrange</span>(fossils_sp, accepted_name)</span></code></pre></div>
 </details>
 <p>We recommend iteratively enacting Rules 4 to 7, because if data are altered or filtered at any point, this can change the overall summary statistics, and affect how we perceive the data. Once you are happy with your dataset, it is time to perform any analytical processes relating to your research question - in our simple example, this is quantifying the latitudinal distribution of our occurrences over time.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" tabindex="-1"></a><span class="co"># List geological stages in dataset</span></span>
-<span id="cb124-2"><a href="#cb124-2" tabindex="-1"></a>time_bins <span class="ot">&lt;-</span> <span class="fu">unique</span>(fossils<span class="sc">$</span>interval_name)</span>
-<span id="cb124-3"><a href="#cb124-3" tabindex="-1"></a></span>
-<span id="cb124-4"><a href="#cb124-4" tabindex="-1"></a><span class="co"># Create object to hold values</span></span>
-<span id="cb124-5"><a href="#cb124-5" tabindex="-1"></a>lat_ranges <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb124-6"><a href="#cb124-6" tabindex="-1"></a></span>
-<span id="cb124-7"><a href="#cb124-7" tabindex="-1"></a><span class="co"># For each stage, identify maximum and minimum latitudinal values</span></span>
-<span id="cb124-8"><a href="#cb124-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(time_bins)) {</span>
-<span id="cb124-9"><a href="#cb124-9" tabindex="-1"></a>  one_stage <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, interval_name <span class="sc">==</span> time_bins[i])</span>
-<span id="cb124-10"><a href="#cb124-10" tabindex="-1"></a>  max <span class="ot">&lt;-</span> <span class="fu">max</span>(one_stage<span class="sc">$</span>paleolat)</span>
-<span id="cb124-11"><a href="#cb124-11" tabindex="-1"></a>  min <span class="ot">&lt;-</span> <span class="fu">min</span>(one_stage<span class="sc">$</span>paleolat)</span>
-<span id="cb124-12"><a href="#cb124-12" tabindex="-1"></a>  midpoint <span class="ot">&lt;-</span> one_stage<span class="sc">$</span>bin_midpoint[<span class="dv">1</span>]</span>
-<span id="cb124-13"><a href="#cb124-13" tabindex="-1"></a>  lat_ranges <span class="ot">&lt;-</span> <span class="fu">rbind</span>(lat_ranges, <span class="fu">c</span>(time_bins[i], midpoint, min, max))</span>
-<span id="cb124-14"><a href="#cb124-14" tabindex="-1"></a>}</span>
-<span id="cb124-15"><a href="#cb124-15" tabindex="-1"></a></span>
-<span id="cb124-16"><a href="#cb124-16" tabindex="-1"></a><span class="co"># Clean up dataframe</span></span>
-<span id="cb124-17"><a href="#cb124-17" tabindex="-1"></a>lat_ranges <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lat_ranges)</span>
-<span id="cb124-18"><a href="#cb124-18" tabindex="-1"></a><span class="fu">colnames</span>(lat_ranges) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;stage&quot;</span>, <span class="st">&quot;midpoint&quot;</span>, <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)</span>
-<span id="cb124-19"><a href="#cb124-19" tabindex="-1"></a>lat_ranges<span class="sc">$</span>midpoint <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lat_ranges<span class="sc">$</span>midpoint)</span>
-<span id="cb124-20"><a href="#cb124-20" tabindex="-1"></a>lat_ranges<span class="sc">$</span>max <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lat_ranges<span class="sc">$</span>max)</span>
-<span id="cb124-21"><a href="#cb124-21" tabindex="-1"></a>lat_ranges<span class="sc">$</span>min <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lat_ranges<span class="sc">$</span>min)</span>
-<span id="cb124-22"><a href="#cb124-22" tabindex="-1"></a></span>
-<span id="cb124-23"><a href="#cb124-23" tabindex="-1"></a><span class="co"># Plot the palaeolatitudinal range by stage</span></span>
-<span id="cb124-24"><a href="#cb124-24" tabindex="-1"></a><span class="fu">ggplot</span>(lat_ranges, <span class="fu">aes</span>(<span class="at">x =</span> midpoint, <span class="at">ymin =</span> min, <span class="at">ymax =</span> max)) <span class="sc">+</span></span>
-<span id="cb124-25"><a href="#cb124-25" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>() <span class="sc">+</span></span>
-<span id="cb124-26"><a href="#cb124-26" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
-<span id="cb124-27"><a href="#cb124-27" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb124-28"><a href="#cb124-28" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
-<span id="cb124-29"><a href="#cb124-29" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
-<span id="cb124-30"><a href="#cb124-30" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" tabindex="-1"></a><span class="co"># List geological stages in dataset</span></span>
+<span id="cb120-2"><a href="#cb120-2" tabindex="-1"></a>time_bins <span class="ot">&lt;-</span> <span class="fu">unique</span>(fossils<span class="sc">$</span>interval_name)</span>
+<span id="cb120-3"><a href="#cb120-3" tabindex="-1"></a></span>
+<span id="cb120-4"><a href="#cb120-4" tabindex="-1"></a><span class="co"># Create object to hold values</span></span>
+<span id="cb120-5"><a href="#cb120-5" tabindex="-1"></a>lat_ranges <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb120-6"><a href="#cb120-6" tabindex="-1"></a></span>
+<span id="cb120-7"><a href="#cb120-7" tabindex="-1"></a><span class="co"># For each stage, identify maximum and minimum latitudinal values</span></span>
+<span id="cb120-8"><a href="#cb120-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(time_bins)) {</span>
+<span id="cb120-9"><a href="#cb120-9" tabindex="-1"></a>  one_stage <span class="ot">&lt;-</span> <span class="fu">filter</span>(fossils, interval_name <span class="sc">==</span> time_bins[i])</span>
+<span id="cb120-10"><a href="#cb120-10" tabindex="-1"></a>  max <span class="ot">&lt;-</span> <span class="fu">max</span>(one_stage<span class="sc">$</span>paleolat)</span>
+<span id="cb120-11"><a href="#cb120-11" tabindex="-1"></a>  min <span class="ot">&lt;-</span> <span class="fu">min</span>(one_stage<span class="sc">$</span>paleolat)</span>
+<span id="cb120-12"><a href="#cb120-12" tabindex="-1"></a>  midpoint <span class="ot">&lt;-</span> one_stage<span class="sc">$</span>bin_midpoint[<span class="dv">1</span>]</span>
+<span id="cb120-13"><a href="#cb120-13" tabindex="-1"></a>  lat_ranges <span class="ot">&lt;-</span> <span class="fu">rbind</span>(lat_ranges, <span class="fu">c</span>(time_bins[i], midpoint, min, max))</span>
+<span id="cb120-14"><a href="#cb120-14" tabindex="-1"></a>}</span>
+<span id="cb120-15"><a href="#cb120-15" tabindex="-1"></a></span>
+<span id="cb120-16"><a href="#cb120-16" tabindex="-1"></a><span class="co"># Clean up dataframe</span></span>
+<span id="cb120-17"><a href="#cb120-17" tabindex="-1"></a>lat_ranges <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(lat_ranges)</span>
+<span id="cb120-18"><a href="#cb120-18" tabindex="-1"></a><span class="fu">colnames</span>(lat_ranges) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;stage&quot;</span>, <span class="st">&quot;midpoint&quot;</span>, <span class="st">&quot;min&quot;</span>, <span class="st">&quot;max&quot;</span>)</span>
+<span id="cb120-19"><a href="#cb120-19" tabindex="-1"></a>lat_ranges<span class="sc">$</span>midpoint <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lat_ranges<span class="sc">$</span>midpoint)</span>
+<span id="cb120-20"><a href="#cb120-20" tabindex="-1"></a>lat_ranges<span class="sc">$</span>max <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lat_ranges<span class="sc">$</span>max)</span>
+<span id="cb120-21"><a href="#cb120-21" tabindex="-1"></a>lat_ranges<span class="sc">$</span>min <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(lat_ranges<span class="sc">$</span>min)</span>
+<span id="cb120-22"><a href="#cb120-22" tabindex="-1"></a></span>
+<span id="cb120-23"><a href="#cb120-23" tabindex="-1"></a><span class="co"># Plot the palaeolatitudinal range by stage</span></span>
+<span id="cb120-24"><a href="#cb120-24" tabindex="-1"></a><span class="fu">ggplot</span>(lat_ranges, <span class="fu">aes</span>(<span class="at">x =</span> midpoint, <span class="at">ymin =</span> min, <span class="at">ymax =</span> max)) <span class="sc">+</span></span>
+<span id="cb120-25"><a href="#cb120-25" tabindex="-1"></a>  <span class="fu">geom_ribbon</span>() <span class="sc">+</span></span>
+<span id="cb120-26"><a href="#cb120-26" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (Ma)&quot;</span>,</span>
+<span id="cb120-27"><a href="#cb120-27" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">&quot;Palaeolatitude (º)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb120-28"><a href="#cb120-28" tabindex="-1"></a>  <span class="fu">scale_x_reverse</span>() <span class="sc">+</span></span>
+<span id="cb120-29"><a href="#cb120-29" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb120-30"><a href="#cb120-30" tabindex="-1"></a>  <span class="fu">coord_geo</span>(<span class="at">dat =</span> <span class="st">&quot;stages&quot;</span>, <span class="at">expand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 <p><img src="index_files/figure-html/final_plot-1.png" width="100%" /></p>
 </div>
 <div id="rule-9-report-your-data-and-cleaning-efforts" class="section level2 hasAnchor">
 <h2>Rule 9: Report your data and cleaning efforts<a href="#rule-9-report-your-data-and-cleaning-efforts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>It is important to report the steps you took in cleaning and processing your data. When any code used to achieve this is presented alongside the manuscript, this is particularly easy, as any specific details which readers may be interested in can be checked within the code. As a result, the written description can be kept brief. An example outlining our workflow above is as follows:</p>
-<p>“We downloaded all fossil occurrence data for the taxon ‘Crocodylia’, dated to the time interval ‘Paleogene’ (66–23Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Taxonomic names and geographic coordinates were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations.”</p>
+<p>“We downloaded all fossil occurrence data for the taxon ‘Crocodylia’, dated to the time interval ‘Paleogene’ (66–23 Ma) from the Paleobiology Database on 21st February 2025 (see supplementary data). Taxonomic names and geographic coordinates were checked for inconsistencies and potential errors, and any duplicates were removed (see supplementary code). After cleaning, the dataset included 844 occurrences, spread across 518 discrete geographic sampling locations.”</p>
 <p>We can also create a reference list containing all of the sources for the occurrences in our dataset.</p>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" tabindex="-1"></a><span class="co"># Generate list of reference numbers</span></span>
-<span id="cb125-2"><a href="#cb125-2" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>reference_no))</span>
-<span id="cb125-3"><a href="#cb125-3" tabindex="-1"></a><span class="co"># Reformat the list</span></span>
-<span id="cb125-4"><a href="#cb125-4" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;ref:&quot;</span>, refs, <span class="st">&quot;,&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb125-5"><a href="#cb125-5" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">paste</span>(refs, <span class="at">collapse =</span> <span class="st">&quot;&quot;</span>)</span>
-<span id="cb125-6"><a href="#cb125-6" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&#39;.{1}$&#39;</span>, <span class="st">&#39;&#39;</span>, refs)</span>
-<span id="cb125-7"><a href="#cb125-7" tabindex="-1"></a><span class="co"># Create API call</span></span>
-<span id="cb125-8"><a href="#cb125-8" tabindex="-1"></a>ref_url <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;https://paleobiodb.org/data1.2/refs/list.csv?ref_id=&quot;</span>,</span>
-<span id="cb125-9"><a href="#cb125-9" tabindex="-1"></a>                 refs, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" tabindex="-1"></a><span class="co"># Generate list of reference numbers</span></span>
+<span id="cb121-2"><a href="#cb121-2" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(fossils<span class="sc">$</span>reference_no))</span>
+<span id="cb121-3"><a href="#cb121-3" tabindex="-1"></a><span class="co"># Reformat the list</span></span>
+<span id="cb121-4"><a href="#cb121-4" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;ref:&quot;</span>, refs, <span class="st">&quot;,&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb121-5"><a href="#cb121-5" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">paste</span>(refs, <span class="at">collapse =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb121-6"><a href="#cb121-6" tabindex="-1"></a>refs <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&#39;.{1}$&#39;</span>, <span class="st">&#39;&#39;</span>, refs)</span>
+<span id="cb121-7"><a href="#cb121-7" tabindex="-1"></a><span class="co"># Create API call</span></span>
+<span id="cb121-8"><a href="#cb121-8" tabindex="-1"></a>ref_url <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;https://paleobiodb.org/data1.2/refs/list.csv?ref_id=&quot;</span>,</span>
+<span id="cb121-9"><a href="#cb121-9" tabindex="-1"></a>                 refs, <span class="at">sep =</span> <span class="st">&quot;&quot;</span>)</span></code></pre></div>
 </details>
 <details class=chunk-details open><summary class=chunk-summary><span class=chunk-summary-text>Code</span></summary>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" tabindex="-1"></a><span class="co"># Use API call (this is not enacted here)</span></span>
-<span id="cb126-2"><a href="#cb126-2" tabindex="-1"></a>ref_table <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(ref_url)</span>
-<span id="cb126-3"><a href="#cb126-3" tabindex="-1"></a><span class="co"># Save table of references for supplement</span></span>
-<span id="cb126-4"><a href="#cb126-4" tabindex="-1"></a><span class="fu">write_csv</span>(ref_table, <span class="st">&quot;data/data_references.csv&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" tabindex="-1"></a><span class="co"># Use API call (this is not enacted here)</span></span>
+<span id="cb122-2"><a href="#cb122-2" tabindex="-1"></a>ref_table <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(ref_url)</span>
+<span id="cb122-3"><a href="#cb122-3" tabindex="-1"></a><span class="co"># Save table of references for supplement</span></span>
+<span id="cb122-4"><a href="#cb122-4" tabindex="-1"></a><span class="fu">write_csv</span>(ref_table, <span class="st">&quot;data/data_references.csv&quot;</span>)</span></code></pre></div>
 </details>
 <p>Depending on the preferences of our journal, we can then add these to our reference list, or provide the table as part of the paper’s data supplement.</p>
 </div>
