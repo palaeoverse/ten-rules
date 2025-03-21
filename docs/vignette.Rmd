@@ -3,8 +3,6 @@ title: "Ten simple rules to follow when cleaning occurrence data in palaeobiolog
 author: "The Palaeoverse Development Team"
 url: 'https\://tenrules.palaeoverse.org/'
 output: 
-  bookdown::pdf_book:
-    number_sections: FALSE
   bookdown::gitbook:
     code_folding: show
     number_sections: FALSE
@@ -18,6 +16,8 @@ output:
       toc:
         after: |
           <li><a href="https://palaeoverse.org/" target="_blank"><img src="img/logo.png" height="50px"></a></li>
+  bookdown::pdf_book:
+    number_sections: FALSE
 github-repo: "palaeoverse/ten-rules"
 cover-image: "img/logo_circle.png"
 apple-touch-icon: "img/apple-touch-icon.png"
