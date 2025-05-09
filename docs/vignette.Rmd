@@ -3,6 +3,8 @@ title: "Ten simple rules to follow when cleaning occurrence data in palaeobiolog
 author: "The Palaeoverse Development Team"
 url: 'https\://tenrules.palaeoverse.org/'
 output: 
+  bookdown::pdf_book:
+    number_sections: FALSE
   bookdown::gitbook:
     code_folding: show
     number_sections: FALSE
@@ -16,8 +18,6 @@ output:
       toc:
         after: |
           <li><a href="https://palaeoverse.org/" target="_blank"><img src="img/logo.png" height="50px"></a></li>
-  bookdown::pdf_book:
-    number_sections: FALSE
 github-repo: "palaeoverse/ten-rules"
 cover-image: "img/logo_circle.png"
 apple-touch-icon: "img/apple-touch-icon.png"
@@ -142,7 +142,7 @@ Our tips for good documentation in R include:
 
 - Following general guidelines for good coding, such as ample use of spacing to help human readability 
 - Having a clear, overarching code structure (such as subsections, which can be denoted with headings and "#====" notation, and an order which corresponds to the flow of the research methods/results)
-- Using logical yet short variable names
+- Using specific yet short object names
 - Including comments throughout which explain both *what* and *why*
 
 ## Rule 4: Explore your data
