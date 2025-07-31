@@ -1,0 +1,66 @@
+{
+    "creators": [
+        {
+            "affiliation": "University College London",
+            "name": "Jones, Lewis A.",
+            "orcid": "0000-0003-3902-8986"
+        },
+        {
+            "affiliation": "University College London",
+            "name": "Dean, Christopher D.",
+            "orcid": "0000-0001-6471-6903"
+        },
+        {
+            "affiliation": "GFZ Helmholtz Centre for Geosciences",
+            "name": "Allen, Bethany J.",
+            "orcid": "0000-0003-0282-6407"
+        },
+        {
+            "affiliation": "University of Lausanne",
+            "name": "Drage, Harriet B.",
+            "orcid": "0000-0002-0759-5970"
+        },
+        {
+            "affiliation": "University of Birmingham",
+            "name": "Flannery-Sutherland, Joseph T.",
+            "orcid": "0000-0001-8232-6773"
+        },
+        {
+            "affiliation": "Syracuse University",
+            "name": "Gearty, William",
+            "orcid": "0000-0003-0076-3262"
+        },
+        {
+             "affiliation": "University College London",
+            "name": "Chiarenza, Alfio A.",
+            "orcid": "0000-0001-5525-6730"
+        },
+        {
+            "affiliation": "Smithsonian Tropical Research Institute",
+            "name": "Dillon, Erin M.",
+            "orcid": "0000-0003-0249-027X"
+        },
+        {
+            "affiliation": "University of Fribourg",
+            "name": "Farina, Bruna M.",
+            "orcid": "0000-0001-6506-3801"
+        },
+        {
+            "affiliation": "University of São Paulo",
+            "name": "Godoy, Pedro L.",
+            "orcid": "0000-0003-4519-5094"
+        }
+    ],
+    "description": "Large datasets of fossil occurrences, often downloaded from online community-maintained databases, are a vital resource for understanding broad-scale evolutionary patterns, such as how biodiversity has changed through time and space. Such datasets, however, are not infallible and must be ‘cleaned’ of inaccurate, incomplete, or duplicate data prior to analysis. Researchers must decide upon the extent, feasibility, and value of data cleaning steps to perform, but while guides are available for working with neontological occurrences, there is currently no clear procedure for palaeobiological data despite its unique attributes. Here, we outline ten rules that aim to aid the process of cleaning fossil occurrence data for downstream analysis. These rules cover the major steps involved in processing data prior to analysis, including project setup, data exploration and cleaning, and finalising and reporting work. We provide accompanying examples and a vignette covering the entire data cleaning process to demonstrate the application of each rule. We believe that these rules will serve as a useful guideline to support data cleaning and foster new standards for the palaeobiological community.",
+    "keywords": [
+        "Palaeontology",
+        "Fossils",
+        "Biodiversity",
+        "Reproducibility",
+        "data cleaning"
+    ],
+    "license": {
+        "id": "GPL-3.0-only"
+    },
+    "title": "Ten simple rules to follow when cleaning occurrence data in palaeobiology"
+}
