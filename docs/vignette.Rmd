@@ -10,7 +10,7 @@ output:
     number_sections: FALSE
     global_numbering: FALSE
     config:
-      download: ["vignette.pdf", "vignette.Rmd"]
+      download: [["vignette.pdf", "PDF"]]
       sharing:
         twitter: false
         facebook: false
