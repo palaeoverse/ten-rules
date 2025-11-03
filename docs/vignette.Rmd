@@ -16,7 +16,7 @@ output:
         facebook: false
         github: true
       toc:
-        after: |
+        before: |
           <li><a href="https://palaeoverse.org/" target="_blank"><img src="img/logo.png" height="50px"></a></li>
 github-repo: "palaeoverse/ten-rules"
 cover-image: "img/logo_circle.png"
@@ -42,7 +42,7 @@ knitr::opts_chunk$set(echo = TRUE, include = TRUE, eval = TRUE, dpi = 200,
 
 This vignette is an accompaniment to:
 
-> Jones LA, Dean CD, Allen BJ, Drage HB, Flannery-Sutherland JT, Gearty W, Chiarenza AA, Dillon EM, Farina BM, and Godoy PL. Ten simple rules to follow when cleaning occurrence data in palaeobiology.
+> Jones LA, Dean CD, Allen BJ, Drage HB, Flannery-Sutherland JT, Gearty W, Chiarenza AA, Dillon EM, Farina BM, and Godoy PL. Ten simple rules to follow when cleaning occurrence data in palaeobiology. *Palaeontology* 68(5), e70028. DOI: [https://doi.org/10.1111/pala.70028](https://doi.org/10.1111/pala.70028).
 
 
 Here we present a full example workflow that complies with the ten rules we propose in the manuscript. The intention is to illustrate the concepts outlined in the manuscript, with further details and ideas for practical implementation, as well as code that can be repurposed by readers.
