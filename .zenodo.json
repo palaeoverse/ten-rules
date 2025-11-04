@@ -57,10 +57,17 @@
         "Fossils",
         "Biodiversity",
         "Reproducibility",
-        "data cleaning"
+        "Data cleaning"
     ],
     "license": {
         "id": "GPL-3.0-only"
     },
-    "title": "Ten simple rules to follow when cleaning occurrence data in palaeobiology"
+    "title": "Ten simple rules to follow when cleaning occurrence data in palaeobiology",
+    "related_identifiers": [
+        {
+            "identifier": "https://doi.org/10.1111/pala.70028",
+            "relation": "isSupplementTo",
+            "resource_type": "publication-article"
+        }
+    ]
 }
